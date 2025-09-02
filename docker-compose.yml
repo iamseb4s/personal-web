@@ -1,0 +1,19 @@
+services:
+  dev-web:
+    container_name: personal-web-dev
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./app:/app
+      - /app/node_modules
+      - ./gemini:/root/.gemini
+    ports:
+      - "3030:3000"
+    extra_hosts:
+      - "host.docker.internal:127.0.0.1"
+    environment:
+      - WATCHPACK_POLLING=true
+      - GOOGLE_CLOUD_PROJECT=arboreal-logic-470723-d8
+    tty: true
+    stdin_open: true
