@@ -5,7 +5,7 @@ import HeroSubtitle from '@/components/ui/HeroSubtitle';
 
 const Hero = () => {
   return (
-    <section className="container mx-auto flex flex-col-reverse items-center gap-12 px-4 py-16 text-center sm:flex-row sm:py-24 lg:py-32 max-w-screen-lg">
+    <section id="home" className="container mx-auto flex flex-col-reverse items-center gap-12 px-4 py-16 text-center sm:flex-row sm:py-24 lg:py-32 max-w-screen-lg">
       {/* Text Content */}
       <div className="flex flex-col items-center sm:items-start sm:text-left">
         <h1 className="mb-4 text-4xl font-black sm:text-5xl md:text-6xl">
