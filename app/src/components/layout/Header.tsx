@@ -12,15 +12,17 @@ const Header = () => {
         <nav className="flex items-center gap-6 text-sm">
           <Link
             href="/#home"
-            className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+            className="relative group text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
           >
             Home
+            <span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-gray-900 dark:bg-gray-100 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out origin-center"></span>
           </Link>
           <Link
             href="/#projects"
-            className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+            className="relative group text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
           >
             Projects
+            <span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-gray-900 dark:bg-gray-100 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out origin-center"></span>
           </Link>
           <ThemeSwitcher />
         </nav>
