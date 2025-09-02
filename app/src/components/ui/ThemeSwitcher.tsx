@@ -2,6 +2,47 @@
 
 import * as React from 'react';
 import { useTheme } from 'next-themes';
+import { motion } from 'framer-motion';
+
+const SunIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2v2" />
+    <path d="M12 20v2" />
+    <path d="m4.93 4.93 1.41 1.41" />
+    <path d="m17.66 17.66 1.41 1.41" />
+    <path d="M2 12h2" />
+    <path d="M20 12h2" />
+    <path d="m6.34 17.66-1.41 1.41" />
+    <path d="m19.07 4.93-1.41 1.41" />
+  </svg>
+);
+
+const MoonIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+  </svg>
+);
 
 const ThemeSwitcher = () => {
   const { resolvedTheme, setTheme } = useTheme();
@@ -12,54 +53,39 @@ const ThemeSwitcher = () => {
   }, []);
 
   if (!mounted) {
-    return null;
+    return <div style={{ width: '36px', height: '36px' }} />;
   }
 
   return (
     <button
       aria-label="Toggle theme"
       onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-      className="p-2 rounded-full transition-colors hover:bg-gray-200 dark:hover:bg-gray-800"
+      className="p-2 rounded-full transition-colors hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer"
     >
-      {resolvedTheme === 'dark' ? (
-        // Moon Icon
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+      <div className="relative w-5 h-5">
+        <motion.div
+          className="absolute inset-0"
+          animate={{
+            opacity: resolvedTheme === 'light' ? 1 : 0,
+            rotate: resolvedTheme === 'light' ? 0 : -20,
+            scale: resolvedTheme === 'light' ? 1 : 0.5,
+          }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
         >
-          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-        </svg>
-      ) : (
-        // Sun Icon
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          <SunIcon />
+        </motion.div>
+        <motion.div
+          className="absolute inset-0"
+          animate={{
+            opacity: resolvedTheme === 'dark' ? 1 : 0,
+            rotate: resolvedTheme === 'dark' ? 0 : 90,
+            scale: resolvedTheme === 'dark' ? 1 : 0.5,
+          }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
         >
-          <circle cx="12" cy="12" r="4" />
-          <path d="M12 2v2" />
-          <path d="M12 20v2" />
-          <path d="m4.93 4.93 1.41 1.41" />
-          <path d="m17.66 17.66 1.41 1.41" />
-          <path d="M2 12h2" />
-          <path d="M20 12h2" />
-          <path d="m6.34 17.66-1.41 1.41" />
-          <path d="m19.07 4.93-1.41 1.41" />
-        </svg>
-      )}
+          <MoonIcon />
+        </motion.div>
+      </div>
     </button>
   );
 };
