@@ -6,7 +6,7 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-black/80 backdrop-blur-sm">
       <div className="container mx-auto flex h-16 max-w-screen-lg items-center justify-between px-4">
-        <Link href="/#home" className="font-black text-lg">
+        <Link href="/" className="font-black text-lg">
           Sebas Nolasco
         </Link>
         <nav className="flex items-center gap-6 text-sm">
