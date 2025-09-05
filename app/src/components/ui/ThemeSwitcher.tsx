@@ -7,8 +7,8 @@ import { motion } from 'framer-motion';
 const SunIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="20"
-    height="20"
+    width="28"
+    height="28"
     viewBox="0 0 24 24"
     fill="currentColor"
     stroke="currentColor"
@@ -32,8 +32,8 @@ const SunIcon = (props: React.SVGProps<SVGSVGElement>) => (
 const MoonIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="20"
-    height="20"
+    width="28"
+    height="28"
     viewBox="0 0 24 24"
     fill="currentColor"
     strokeLinecap="round"
@@ -60,9 +60,9 @@ const ThemeSwitcher = () => {
     <button
       aria-label="Toggle theme"
       onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-      className="p-2 rounded-full transition-colors hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer"
+      className="p-3 rounded-full hover:bg-background/50 dark:hover:bg-background/50 cursor-pointer"
     >
-      <div className="relative w-5 h-5">
+      <div className="relative w-7 h-7">
         <motion.div
           className="absolute inset-0"
           animate={{
