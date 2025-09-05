@@ -30,30 +30,30 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
         y: isHovered ? -5 : 0,
       }}
       transition={{
-        duration: isHovered ? 0.15 : 0.75, // Fast hover-in, slow hover-out
+        duration: isHovered ? 0.15 : 0.3, // Fast hover-in, slow hover-out
         ease: 'easeOut',
       }}
       className="h-full"
     >
-      <Link href={`/projects/${project.slug}`} className="group block rounded-lg border border-gray-200 dark:border-gray-800 hover:shadow-lg transition-shadow bg-white dark:bg-gray-900 h-full">
-        <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
+      <Link href={`/projects/${project.slug}`} className="group block rounded-xl border border-primary hover:shadow-lg transition-shadow bg-primary h-full">
+        <div className="relative h-40 lg:h-50 xl:h-60 w-full overflow-hidden rounded-t-xl">
           {/* Placeholder for project image */}
           <Image
-            src="/next.svg" // Placeholder
-            alt={`Screenshot of ${project.title}`}
-            layout="fill"
-            objectFit="cover"
-            className="dark:invert p-8"
+            src="/project_default.png" // Placeholder
+            alt={`Image of ${project.title}`}
+            fill
+            sizes="(max-width: 767px) 100vw, 50vw"
+            className="object-cover scale-118 p-0"
           />
         </div>
         <div className="p-6">
-          <h3 className="text-xl font-bold mb-2">{project.title}</h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-4 text-sm">
+          <h3 className="text-4xl text-primary-foreground font-sans mb-2 under">{project.title}</h3>
+          <p className="text-secondary mb-4 text-sm lg:text-lg font-mono">
             {project.description}
           </p>
           <div className="flex flex-wrap gap-2">
             {project.technologies.map((tech) => (
-              <span key={tech} className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+              <span key={tech} className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">
                 {tech}
               </span>
             ))}

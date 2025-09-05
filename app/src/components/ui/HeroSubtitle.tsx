@@ -7,8 +7,8 @@ const HeroSubtitle = () => {
     <Typewriter
       options={{
         strings: [
-          'Full-Stack Developer',
-          'Software Engineer',
+          'Data Scientist',
+          'Data Analyst',
           'Lifelong Learner',
         ],
         autoStart: true,

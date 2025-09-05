@@ -1,32 +1,37 @@
 import React from 'react';
 import Link from 'next/link';
 import ThemeSwitcher from '@/components/ui/ThemeSwitcher';
+import Container from '@/components/ui/Container';
 
 const Header = () => {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-black/80 backdrop-blur-sm">
-      <div className="container mx-auto flex h-16 max-w-screen-lg items-center justify-between px-4">
-        <Link href="/" className="font-black text-lg">
+    <header className="sticky top-0 z-50 w-full bg-primary backdrop-blur-sm shadow-lg">
+      <Container
+        paddingX="px-8 md:px-8 lg:px-8"
+        maxWidth="max-w-screen-sm sm:max-w-none"
+        className="flex h-16 lg:h-20 items-center justify-between"
+      >
+        <Link href="/" className="font-sans text-2xl xl:text-4xl">
           Sebas Nolasco
         </Link>
-        <nav className="flex items-center gap-6 text-sm">
+        <nav className="flex items-center gap-4 sm:gap-6 md:gap-8 text-md xl:text-xl">
           <Link
             href="/#home"
-            className="relative group text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+            className="font-mono  relative group text-foreground transition-colors"
           >
-            Home
-            <span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-gray-900 dark:bg-gray-100 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out origin-center"></span>
+            INICIO
+            <span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-foreground transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out origin-center "></span>
           </Link>
           <Link
             href="/#projects"
-            className="relative group text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+            className="font-mono relative group text-foreground transition-colors"
           >
-            Projects
-            <span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-gray-900 dark:bg-gray-100 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out origin-center"></span>
+            PROYECTOS
+            <span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-foreground transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out origin-center"></span>
           </Link>
           <ThemeSwitcher />
         </nav>
-      </div>
+      </Container>
     </header>
   );
 };
