@@ -44,9 +44,16 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
   const CardContent = (
     // Main container for positioning, hover effects, and clipping
     <div className="block rounded-xl h-full relative overflow-hidden group hover:shadow-lg transition-shadow">
-      {/* Layer 1: Content (Background, Image, Text). This layer gets all filters. */}
-      <div
-        className={`bg-primary h-full transition-all duration-500 ${isWip ? 'grayscale brightness-90 blur-sm group-hover:blur-none' : ''}`}>
+      {/* Layer 1: Content (Background, Image, Text). This layer gets all filters via Framer Motion. */}
+      <motion.div
+        className="bg-primary h-full"
+        animate={{
+          filter: isWip
+            ? `grayscale(1) brightness(0.9) blur(${isHovered ? 0 : 5}px)`
+            : 'none',
+        }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+      >
         <div className="relative h-40 lg:h-50 xl:h-60 w-full">
           <Image
             src="/project_default.png" // Placeholder
@@ -69,7 +76,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
             ))}
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Layer 2: Border. Sits on top of content, gets grayscaled independently. */}
       <div
@@ -81,7 +88,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center pointer-events-none">
           <WiderLockIcon className="h-12 w-12 text-white" />
           <p className="mt-3 text-white font-sans text-3xl transition-opacity duration-250 opacity-100 group-hover:opacity-0">
-            Coming Soon!
+            Muy Pronto!
           </p>
         </div>
       )}
@@ -92,10 +99,10 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
     <motion.div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      initial={{ scale: 1, y: 0 }}
+      initial={{ y: 0 }}
       animate={{
-        scale: isHovered ? 1.03 : 1,
-        y: isHovered ? -5 : 0,
+        scale: !isWip && isHovered ? 1.03 : 1,
+        y: !isWip && isHovered ? -5 : 0,
       }}
       transition={{
         duration: isHovered ? 0.15 : 0.3, // Fast hover-in, slow hover-out
