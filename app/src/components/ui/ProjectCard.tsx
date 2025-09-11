@@ -57,7 +57,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
           />
         </div>
         <div className="p-6">
-          <h3 className="text-4xl text-primary-foreground font-sans mb-2 under">{project.title}</h3>
+          <h3 className="text-4xl text-primary-foreground font-sans sm:mt-3 mb-2 under">{project.title}</h3>
           <p className="text-secondary mb-4 text-sm lg:text-lg font-mono">
             {project.description}
           </p>

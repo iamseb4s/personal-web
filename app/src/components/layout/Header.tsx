@@ -12,7 +12,7 @@ const Header = () => {
         className="flex h-16 lg:h-20 items-center justify-between"
       >
         <Link href="/" className="font-sans text-2xl xl:text-4xl">
-          Sebas Nolasco
+          iamsebas.dev
         </Link>
         <nav className="flex items-center gap-4 sm:gap-6 md:gap-8 text-md xl:text-xl">
           <Link
