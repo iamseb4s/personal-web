@@ -20,7 +20,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sebas Nolasco",
+  title: "Hi, I am Sebas! 👾",
   description: "Check out my projects here!",
   icons: {
     icon: "/sebas_icon.svg",
