@@ -24,13 +24,14 @@ const WiderLockIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-// Define the type for a single project, now including status
+// Define the type for a single project, now including status and main_image
 export type Project = {
   slug: string;
   title: string;
   description: string;
   technologies: string[];
-  status: 'writing' | 'finished';
+  status: 'writing' | 'completed';
+  main_image?: string;
 };
 
 type ProjectCardProps = {
@@ -39,7 +40,7 @@ type ProjectCardProps = {
 
 const ProjectCard = ({ project }: ProjectCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
-  const isWip = project.status !== 'finished';
+  const isWip = project.status !== 'completed';
 
   const CardContent = (
     // Main container for positioning, hover effects, and clipping
@@ -56,15 +57,17 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
       >
         <div className="relative h-40 lg:h-50 xl:h-60 w-full">
           <Image
-            src="/project_default.png" // Placeholder
+            src={project.main_image || '/project_default.png'} // Use main_image or fallback to default
             alt={`Image of ${project.title}`}
             fill
             sizes="(max-width: 767px) 100vw, 50vw"
-            className="object-cover scale-118 p-0"
+            className="object-cover p-0"
           />
         </div>
         <div className="p-6">
-          <h3 className="text-4xl text-primary-foreground font-sans sm:mt-3 mb-2 under">{project.title}</h3>
+          <h3 className="text-4xl text-primary-foreground font-sans under">
+            {project.title}
+          </h3>
           <p className="text-secondary mb-4 text-sm lg:text-lg font-mono">
             {project.description}
           </p>
