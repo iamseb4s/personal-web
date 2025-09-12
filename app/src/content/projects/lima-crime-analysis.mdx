@@ -1,0 +1,53 @@
+---
+main_image: '/project_default.png'
+title: 'Análisis de la Inseguridad Ciudadana en Lima, Perú'
+description: 'Un análisis exploratorio profundo sobre los patrones y factores de la delincuencia en Lima, Perú.'
+technologies: ['Python', 'Pandas', 'GeoPandas', 'Matplotlib', 'Seaborn']
+status: 'writing'
+date: '2025-08-31'
+hero_image: false
+---
+
+## Guía de Desarrollo del Proyecto
+
+Este documento sirve como una guía paso a paso para desarrollar el análisis sobre la inseguridad ciudadana en Lima.
+
+### 1. Definición del Problema y Objetivos
+
+El objetivo principal es entender los patrones de la delincuencia en Lima Metropolitana. Las preguntas a responder son:
+
+- ¿Cuáles son los distritos con mayores tasas de criminalidad?
+- ¿Existe estacionalidad? ¿Hay meses o días de la semana con más incidentes?
+- ¿Qué tipo de delitos son los más comunes?
+- ¿Hay alguna correlación entre la ubicación de los delitos y factores socioeconómicos?
+
+### 2. Búsqueda y Obtención de Datos
+
+- **Fuente Principal:** Portal Nacional de Datos Abiertos del Perú. Buscar datasets de "Denuncias por comisión de delitos", "Comisarías", etc. La PNP o el INEI suelen publicar esta información.
+- **Datos Geoespaciales:** Buscar los GeoJSON o Shapefiles de los límites distritales de Lima Metropolitana. El INEI o el Geoportal de la Municipalidad de Lima son buenas fuentes.
+- **Datos Complementarios (Opcional):** Censos del INEI para obtener datos socioeconómicos por distrito (población, densidad, ingresos, etc.).
+
+### 3. Limpieza y Preprocesamiento de Datos
+
+- Cargar los datasets con **Pandas**.
+- Inspeccionar los datos: tipos de columnas, valores nulos, inconsistencias.
+- **Manejo de Fechas:** Convertir las columnas de fecha a formato `datetime` para poder extraer año, mes, día de la semana, etc.
+- **Geocodificación (si es necesario):** Si los datos tienen direcciones pero no coordenadas, se podría usar una librería como `geopy` para obtener latitud y longitud (cuidado con los límites de las APIs).
+- **Unión de Datos:** Fusionar el dataset de delitos con los datos geoespaciales de los distritos usando **GeoPandas**.
+
+### 4. Análisis Exploratorio de Datos (EDA)
+
+- **Análisis Univariado:**
+  - Frecuencia de delitos por tipo (gráfico de barras).
+  - Frecuencia de delitos por distrito (gráfico de barras).
+  - Distribución de delitos a lo largo del tiempo (series de tiempo).
+- **Análisis Bivariado:**
+  - Mapa de calor (Heatmap) de Lima mostrando la concentración de delitos por distrito.
+  - Gráficos de barras apiladas mostrando tipos de delito por distrito.
+  - Análisis de la estacionalidad de los delitos más comunes.
+
+### 5. Visualización y Comunicación
+
+- Crear un set de visualizaciones claras y concisas usando **Matplotlib** y **Seaborn**.
+- **Mapas Coropléticos:** Usar **GeoPandas** para crear mapas de Lima donde cada distrito está coloreado según su tasa de criminalidad. Esto es visualmente muy impactante.
+- Redactar las conclusiones finales, respondiendo a las preguntas planteadas en el paso 1 y contando una historia con los datos.
