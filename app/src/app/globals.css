@@ -44,6 +44,8 @@
 
   --font-sans: var(--font-bebas-neue);
   --font-mono: "IBM Plex Mono", monospace;
+  --font-heading: var(--font-roboto);
+  --font-body: var(--font-noto-serif);
 }
 
 html {
