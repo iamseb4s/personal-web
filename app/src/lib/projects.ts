@@ -14,10 +14,26 @@ export function getAllProjects() {
 
     return {
       slug,
-      ...(matterResult.data as { title: string; description: string; technologies: string[] }),
+      ...(matterResult.data as {
+        title: string;
+        description: string;
+        technologies: string[];
+        status: 'completed' | 'writing';
+        date: string;
+      }),
     };
   });
-  return allProjectsData;
+
+  // Sort projects: completed first, then by date descending
+  return allProjectsData.sort((a, b) => {
+    if (a.status === 'completed' && b.status !== 'completed') {
+      return -1;
+    }
+    if (a.status !== 'completed' && b.status === 'completed') {
+      return 1;
+    }
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
 }
 
 export function getProjectBySlug(slug: string) {
