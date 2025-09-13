@@ -1,0 +1,41 @@
+# Stage 1: Builder
+# This stage installs all dependencies (including dev) and builds the application.
+FROM node:20-alpine AS builder
+
+# Set working directory inside the container
+WORKDIR /app
+# Copy package files from your local 'app' directory into the container's /app
+COPY app/package*.json ./
+
+# Install all dependencies
+RUN npm install
+# Copy the rest of your application's source code
+COPY app/ ./
+# Build the Next.js application for production
+RUN npm run build
+
+# ---
+
+# Stage 2: Runner
+# This stage creates the final, lightweight image with only what's needed to run the app.
+FROM node:20-alpine AS runner
+
+# Set working directory inside the container
+WORKDIR /app
+# Copy package files from your local 'app' directory
+COPY app/package*.json ./
+
+# Install ONLY production dependencies. This is crucial for security and image size.
+RUN npm ci --omit=dev
+# Copy the essential built assets from the 'builder' stage
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/next.config.ts ./next.config.ts
+
+# Set NEXT_PORT environment variable to 4000
+ENV PORT=4000
+# Expose the port the app will run on
+EXPOSE 4000
+
+# The command to start the production server on the specified port
+CMD ["npm", "start"]
