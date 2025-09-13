@@ -1,4 +1,4 @@
-name: Deploy Releases and Pre-Releases
+name: Deploy to Production
 
 on:
   release:
@@ -58,7 +58,7 @@ jobs:
         run: echo "${{ secrets.DOTENV_PRODUCTION }}" > .env.production
 
       - name: Rebuild and deploy Docker containers
-        run: docker-compose -f docker-compose.prod.yml up -d --build
+        run: docker compose -f docker-compose.prod.yml up -d --build
 
       - name: Health Check
         run: |
