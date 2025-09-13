@@ -1,0 +1,16 @@
+FROM node:20-alpine
+
+# Install bash
+RUN apk add --no-cache bash
+
+# Gemini CLI
+RUN npm install -g @google/gemini-cli
+
+WORKDIR /app
+COPY ./app/package*.json ./
+
+RUN npm install
+COPY ./app/. .
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]

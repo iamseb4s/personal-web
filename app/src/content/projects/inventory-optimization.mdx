@@ -1,0 +1,58 @@
+---
+main_image: '/project_default.png'
+title: 'Optimización de Inventario de una botica local'
+description: 'Desarrollo de un modelo de Machine Learning enfocado en encontrar el nivel óptimo de stock en una botica local.'
+technologies: ['Python', 'NumPy', 'SciPy', 'Matplotlib']
+status: 'writing'
+date: '2025-09-11'
+hero_image: false
+---
+
+## Guía de Desarrollo del Proyecto
+
+Este documento sirve como una guía paso a paso para desarrollar el modelo de simulación de optimización de inventario.
+
+### 1. Planteamiento del Problema de Negocio
+
+Una tienda minorista se enfrenta a un problema clásico: ¿cuántas unidades de un producto específico debe pedir a su proveedor en cada orden?
+
+- **Costo de Exceso de Inventario:** Si pide demasiado, incurre en costos de almacenamiento y riesgo de que el producto no se venda.
+- **Costo de Faltante de Inventario (Stockout):** Si pide muy poco, pierde ventas potenciales cuando la demanda supera la oferta.
+
+**Objetivo:** Encontrar la cantidad de pedido ("Q") que maximice la ganancia promedio simulada a lo largo de un año.
+
+### 2. Definición del Modelo y Parámetros
+
+Se creará un modelo de simulación de eventos discretos. Parámetros a definir:
+
+- **Demanda Diaria:** Se modelará con una distribución de probabilidad. Una **distribución de Poisson** es un buen punto de partida (ej. `lambda = 20` unidades/día).
+- **Precio de Venta:** Ej. $50 por unidad.
+- **Costo del Producto:** Ej. $30 por unidad (lo que le cuesta a la tienda).
+- **Costo de Almacenamiento:** Ej. $0.5 por unidad por día.
+- **Tiempo de Entrega (Lead Time):** El tiempo que tarda en llegar un pedido. Se puede modelar como un valor fijo (ej. 3 días) o con otra distribución (ej. uniforme entre 2 y 4 días).
+- **Política de Pedido:** Se usará un modelo de "punto de reorden" (R, Q). Cuando el inventario cae por debajo de un nivel `R` (ej. 50 unidades), se realiza un nuevo pedido de `Q` unidades.
+
+### 3. Implementación de la Simulación (Python)
+
+- Usar **NumPy** para generar la demanda diaria aleatoria (`numpy.random.poisson`).
+- Crear un bucle que simule el paso del tiempo día a día durante un período largo (ej. 365 días).
+- En cada día, se debe:
+  1. Recibir pedidos pendientes (si los hay).
+  2. Calcular la demanda del día.
+  3. Satisfacer la demanda con el inventario disponible y calcular los ingresos.
+  4. Calcular los costos de almacenamiento del inventario sobrante.
+  5. Comprobar si el nivel de inventario ha caído por debajo del punto de reorden `R` y, si es así, realizar un nuevo pedido.
+- Envolver esta simulación en una función que reciba `Q` como parámetro y devuelva la ganancia total.
+
+### 4. Búsqueda de la Solución Óptima (Análisis de Monte Carlo)
+
+- Crear un segundo bucle que itere sobre un rango de posibles valores de `Q` (ej. de 50 a 500 unidades, en pasos de 10).
+- Para cada valor de `Q`, ejecutar la simulación del paso 3 múltiples veces (ej. 1000 veces) para promediar los resultados y mitigar la aleatoriedad. Esto es el **Análisis de Monte Carlo**.
+- Almacenar la ganancia promedio para cada `Q`.
+
+### 5. Análisis de Resultados y Conclusión
+
+- Usar **Matplotlib** para graficar la ganancia promedio en función de la cantidad de pedido `Q`.
+- Identificar el valor de `Q` que maximiza la ganancia en el gráfico.
+- **Análisis de Sensibilidad (Opcional):** Repetir el análisis cambiando otros parámetros (como el `lambda` de la demanda o el costo de almacenamiento) para ver cómo afecta a la `Q` óptima.
+- Redactar una conclusión clara para el negocio, recomendando una política de inventario basada en los resultados de la simulación.
