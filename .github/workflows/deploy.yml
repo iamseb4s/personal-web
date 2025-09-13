@@ -1,4 +1,4 @@
-name: Deploy to Production
+name: Deploy Releases and Pre-Releases
 
 on:
   release:
@@ -38,7 +38,6 @@ jobs:
   handle_prerelease:
     name: Handle Pre-Release
     runs-on: ubuntu-latest
-    # Log when a pre-release event
     if: github.event.release.prerelease == true
     steps:
       - name: Log pre-release event
@@ -47,43 +46,26 @@ jobs:
   deploy:
     name: Deploy to Production Server
     needs: build_and_test
-    runs-on: ubuntu-latest
-    # Deploy when is a final release
+    runs-on: self-hosted
     if: github.event.release.prerelease == false
-
     steps:
-      - name: Deploy to production
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Checkout correct tag
+        uses: actions/checkout@v4
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT || 22 }}
-          script: |
-            echo "🚀 Starting production deployment for release ${{ github.ref_name }}..."
+          ref: ${{ github.ref_name }}
 
-            # Navigate to the CORRECT production directory on the server
-            cd /home/sebas_std/docker/web-prod
+      - name: Set up environment file
+        run: echo "${{ secrets.DOTENV_PRODUCTION }}" > .env.production
 
-            # Fetch all tags from the remote repository
-            git fetch origin --tags
+      - name: Rebuild and deploy Docker containers
+        run: docker-compose -f docker-compose.prod.yml up -d --build
 
-            # Checkout the specific tag of the release
-            git checkout ${{ github.ref_name }}
+      - name: Health Check
+        run: |
+          echo "⏳ Waiting for application health check..."
+          sleep 15
+          curl --fail http://localhost:4000 || (echo "❌ Health check failed!" && exit 1)
+          echo "✅ Health check passed!"
 
-            # Create the .env.production file from GitHub secrets
-            echo "${{ secrets.DOTENV_PRODUCTION }}" > .env.production
-
-            # Build and start the production containers
-            docker-compose -f docker-compose.prod.yml up -d --build
-
-            # Health Check to verify the deployment
-            echo "⏳ Waiting for application health check..."
-            sleep 15
-            curl --fail http://localhost:4000 || (echo "❌ Health check failed!" && exit 1)
-            echo "✅ Health check passed!"
-
-            # Clean up old, unused Docker images to save space
-            docker image prune -f
-
-            echo "✅ Deployment successful!"
+      - name: Clean up old Docker images
+        run: docker image prune -a -f
