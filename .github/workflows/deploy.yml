@@ -1,4 +1,4 @@
-name: Deploy to Production
+name: Deploy Releases and Pre-Releases
 
 on:
   release:
@@ -48,6 +48,8 @@ jobs:
     needs: build_and_test
     runs-on: self-hosted
     if: github.event.release.prerelease == false
+    env:
+      COMPOSE_PROJECT_NAME: portfolio-prod
     steps:
       - name: Checkout correct tag
         uses: actions/checkout@v4
@@ -63,9 +65,26 @@ jobs:
       - name: Health Check
         run: |
           echo "⏳ Waiting for application health check..."
-          sleep 15
-          curl --fail http://localhost:4000 || (echo "❌ Health check failed!" && exit 1)
-          echo "✅ Health check passed!"
+
+          NETWORK_NAME="${{ env.COMPOSE_PROJECT_NAME }}_default"
+          SERVICE_NAME="prod-web"
+
+          end_time=$((SECONDS+60))
+
+          while [ $SECONDS -lt $end_time ]; do
+            if docker run --rm --network=$NETWORK_NAME curlimages/curl:8.7.1 -s --fail "http://${SERVICE_NAME}:4000" -o /dev/null; then
+              echo "✅ Health check passed!"
+              exit 0
+            fi
+            echo "Retrying health check in 5 seconds..."
+            sleep 5
+          done
+
+          echo "❌ Health check failed after 60 seconds!"
+          echo "Dumping container logs for debugging..."
+          docker logs web-prod
+          exit 1
 
       - name: Clean up old Docker images
+        if: always()
         run: docker image prune -a -f
