@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import Container from '@/components/ui/Container';
 
 const Footer = () => {
@@ -17,13 +18,13 @@ const Footer = () => {
       >
         <p className="text-center font-mono text-sm sm:text-md  md:text-lg leading-loose text-secondary-foreground md:text-left">
           Built by{' '}
-          <a
+          <Link
             href="/"
             className="relative group font-bold"
           >
             Sebas
             <span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-secondary-foreground transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out origin-center"></span>
-          </a>
+          </Link>
           .
         </p>
         <div className="flex items-center">

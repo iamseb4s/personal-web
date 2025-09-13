@@ -3,8 +3,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { MDXRemote } from 'next-mdx-remote/rsc';
-import { useMDXComponents } from '@/mdx-components';
+import { MdxContent } from './mdx-content';
 
 export function generateStaticParams() {
   const projects = getAllProjects();
@@ -13,17 +12,24 @@ export function generateStaticParams() {
   }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const project = getProjectBySlug(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }):
+  Promise<Metadata> {
+    const { slug } = await params; // Esperar la promesa
+    const project = getProjectBySlug(slug);
+    if (!project) {
+      return {
+        title: 'Project Not Found'
+      }
+    }
   return {
     title: `${project.frontmatter.title} | iamsebas.dev`,
     description: project.frontmatter.description,
   };
 }
 
-const ProjectPage = ({ params }: { params: { slug: string } }) => {
-  const project = getProjectBySlug(params.slug);
-  const components = useMDXComponents({});
+export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const project = getProjectBySlug(slug);
 
   if (!project) {
     notFound();
@@ -81,7 +87,7 @@ const ProjectPage = ({ params }: { params: { slug: string } }) => {
         </div>
 
         <div className="mx-auto max-w-full mb-10">
-          <MDXRemote source={project.content} components={components} />
+          <MdxContent source={project.content} />
         </div>
 
         <div className="mt-20 mb-20 text-center">
@@ -96,6 +102,5 @@ const ProjectPage = ({ params }: { params: { slug: string } }) => {
       </div>
     </article>
   );
-};
+}
 
-export default ProjectPage;
