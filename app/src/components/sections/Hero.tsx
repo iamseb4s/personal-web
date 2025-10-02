@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import HeroSubtitle from '@/components/ui/HeroSubtitle';
 import Container from '@/components/ui/Container';
+import { siteMetadata } from '@/lib/site-metadata';
 
 const Hero = () => {
   return (
@@ -29,7 +30,7 @@ const Hero = () => {
               MIS PROYECTOS
             </Link>
             <Link
-              href="mailto:sebas@iamsebas.dev"
+              href={siteMetadata.email}
               className="inline-flex h-10 xl:h-12 items-center justify-center rounded-full border border-foreground bg-transparent px-6 md:px-8 text-md xl:text-xl font-mono text-foreground shadow transition-colors hover:bg-foreground/10 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50"
             >
               CONTACTO
