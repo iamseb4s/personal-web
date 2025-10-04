@@ -12,39 +12,45 @@ const GlobeIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-// Icon for Repository
-const FolderIcon = (props: React.SVGProps<SVGSVGElement>) => (
+// Icon for GitHub Repository
+const GitHubIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
     </svg>
 );
-
 
 type ActionButtonsProps = {
   liveDemoUrl?: string;
   repoUrl?: string;
   className?: string; // Prop for external styling classes
+  size?: 'small' | 'normal';
 };
 
-const ActionButtons = ({ liveDemoUrl, repoUrl, className }: ActionButtonsProps) => {
+const ActionButtons = ({ liveDemoUrl, repoUrl, className, size = 'normal' }: ActionButtonsProps) => {
   // If neither URL is provided, render nothing.
   if (!liveDemoUrl && !repoUrl) {
     return null;
   }
 
+  const sizeClasses = {
+    normal: 'px-4 py-1.5 text-md',
+    small: 'px-3 py-1 sm:px-3 sm:py-1 text-sm',
+  };
+
   // Use the external className, or a default if not provided
   return (
-    <div className={className || 'mt-4 flex flex-wrap gap-4'}>
+    <div className={className || 'mt-4 flex flex-wrap gap-2 sm:gap-4'}>
       {liveDemoUrl && (
         <Link
           href={liveDemoUrl}
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
-          className="flex items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          className={`flex items-center justify-center gap-2 rounded-full bg-primary font-mono font-medium text-primary-foreground transition-transform duration-300 ease-in-out hover:scale-105 border-2 border-secondary ${sizeClasses[size]}`}
         >
           <GlobeIcon className="h-4 w-4" />
-          Live Demo
+          <span className="inline sm:hidden">Demo</span>
+          <span className="hidden sm:inline">Live Demo</span>
         </Link>
       )}
       {repoUrl && (
@@ -53,10 +59,11 @@ const ActionButtons = ({ liveDemoUrl, repoUrl, className }: ActionButtonsProps) 
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
-          className="flex items-center justify-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground transition-colors hover:bg-secondary/90"
+          className={`flex items-center justify-center gap-2 rounded-full bg-secondary font-mono font-medium text-secondary-foreground transition-transform duration-300 ease-in-out hover:scale-105 ${sizeClasses[size]}`}
         >
-          <FolderIcon className="h-4 w-4" />
-          Repository
+          <GitHubIcon className="h-4 w-4" />
+          <span className="inline sm:hidden">Repo</span>
+          <span className="hidden sm:inline">Repositorio</span>
         </Link>
       )}
     </div>

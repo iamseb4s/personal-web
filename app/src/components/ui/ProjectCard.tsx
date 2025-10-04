@@ -90,6 +90,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
           <ActionButtons
             repoUrl={project.repoUrl}
             liveDemoUrl={project.liveDemoUrl}
+            size="small"
           />
           <div className="flex flex-wrap gap-2 mt-6">
             {project.technologies.map((tech) => (

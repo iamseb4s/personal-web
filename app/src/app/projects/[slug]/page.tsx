@@ -85,7 +85,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
         <ActionButtons
           repoUrl={project.frontmatter.repoUrl as string}
           liveDemoUrl={project.frontmatter.liveDemoUrl as string}
-          className="flex justify-left mt-5 gap-6"
+          className="flex justify-center mt-5 gap-6"
         />
 
         <div className="mx-auto max-w-full mt-20 mb-10">
