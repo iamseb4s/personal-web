@@ -3,7 +3,9 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { MdxContent } from './mdx-content';
+import { MDXRemote } from 'next-mdx-remote/rsc';
+import { mdxComponents } from '@/mdx-components';
+import ActionButtons from '@/components/ui/ActionButtons';
 
 export function generateStaticParams() {
   const projects = getAllProjects();
@@ -12,36 +14,29 @@ export function generateStaticParams() {
   }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }):
-  Promise<Metadata> {
-    const { slug } = await params; // Esperar la promesa
-    const project = getProjectBySlug(slug);
-    if (!project) {
-      return {
-        title: 'Project Not Found'
-      }
+export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
+  const { slug } = params;
+  const project = getProjectBySlug(slug);
+  if (!project) {
+    return {
+      title: 'Project Not Found'
     }
+  }
   return {
     title: `${project.frontmatter.title} | iamsebas.dev`,
-    description: project.frontmatter.description,
+    description: project.frontmatter.description as string,
   };
 }
 
-export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+export default function ProjectPage({ params }: { params: { slug: string } }) {
+  const { slug } = params;
   const project = getProjectBySlug(slug);
 
   if (!project) {
     notFound();
   }
 
-  // Calculate reading time
-  const wordsPerMinute = 200;
-  const numberOfWords = project.content.split(/\s+/).length;
-  const readingTime = Math.ceil(numberOfWords / wordsPerMinute);
-
-  // Format date
-  const formattedDate = new Date(project.frontmatter.date).toLocaleDateString('es-ES', {
+  const formattedDate = new Date(project.frontmatter.date as string).toLocaleDateString('es-ES', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -54,8 +49,8 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
       {hasHeroImage && (
         <div className="relative h-0 sm:h-40 md:h-60 w-full [mask-image:linear-gradient(to_bottom,black_5%,transparent_100%)]">
           <Image
-            src={project.frontmatter.main_image || '/project_default.png'}
-            alt={project.frontmatter.title}
+            src={project.frontmatter.main_image as string || '/project_default.png'}
+            alt={project.frontmatter.title as string}
             fill
             className="object-cover"
             priority
@@ -65,10 +60,10 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 
       <div className="container mx-auto max-w-screen-md lg:max-w-4xl px-4">
         <div className={`${hasHeroImage ? 'mt-14' : 'mt-16 sm:mt-24'} mb-12 text-center md:px-10`}>
-          <h1 className="font-sans text-5xl sm:text-5xl lg:text-6xl">{project.frontmatter.title}</h1>
+          <h1 className="font-sans text-5xl sm:text-5xl lg:text-6xl">{project.frontmatter.title as string}</h1>
         </div>
 
-        <div className="mb-20 flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-8 text-sm text-foreground/70 font-mono">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-8 text-sm text-foreground/70 font-mono">
           <Link href="/" className="flex items-center gap-2 group">
             <Image
               src="/sebas_icon.svg"
@@ -80,14 +75,21 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
             <span className="group-hover:underline">iamsebas.dev</span>
           </Link>
           <div className="flex items-center gap-4">
-            <span>{`${readingTime} min de lectura`}</span>
+            <span>{`${project.readingTime} min de lectura`}</span>
             <span className="sm:inline">•</span>
-            <time dateTime={project.frontmatter.date}>{formattedDate}</time>
+            <time dateTime={project.frontmatter.date as string}>{formattedDate}</time>
           </div>
         </div>
 
-        <div className="mx-auto max-w-full mb-10">
-          <MdxContent source={project.content} />
+        {/* Action Buttons container */}
+        <ActionButtons
+          repoUrl={project.frontmatter.repoUrl as string}
+          liveDemoUrl={project.frontmatter.liveDemoUrl as string}
+          className="flex justify-center mt-5 gap-6"
+        />
+
+        <div className="mx-auto max-w-full mt-20 mb-10">
+          <MDXRemote source={project.content} components={mdxComponents} />
         </div>
 
         <div className="mt-20 mb-20 text-center">
@@ -103,4 +105,3 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
     </article>
   );
 }
-

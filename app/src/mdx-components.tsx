@@ -2,8 +2,8 @@ import type { MDXComponents } from "mdx/types";
 import CustomImage from "@/components/ui/CustomImage";
 
 // This file is required to use MDX in the `app` directory.
-export function useMDXComponents(): MDXComponents {
-  return {
+
+export const mdxComponents: MDXComponents = {
     // Main heading (e.g., # Title)
     h1: ({ children }) => (
       <h1 className="font-heading font-bold text-4xl lg:text-5xl mt-8 mb-8">{children}</h1>
@@ -65,5 +65,8 @@ export function useMDXComponents(): MDXComponents {
     ),
     // Custom Image Component
     CustomImage,
-  };
+};
+
+export function useMDXComponents(): MDXComponents {
+  return mdxComponents;
 }
