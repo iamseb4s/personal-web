@@ -1,10 +1,12 @@
 'use client';
 
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import React from 'react';
+import ActionButtons from './ActionButtons';
+import Link from 'next/link';
 
 // Custom SVG icon with adjusted proportions.
 const WiderLockIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -32,6 +34,8 @@ export type Project = {
   technologies: string[];
   status: 'writing' | 'completed';
   main_image?: string;
+  repoUrl?: string;
+  liveDemoUrl?: string;
 };
 
 type ProjectCardProps = {
@@ -39,8 +43,20 @@ type ProjectCardProps = {
 };
 
 const ProjectCard = ({ project }: ProjectCardProps) => {
+  const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
   const isWip = project.status !== 'completed';
+
+  const handleCardClick = () => {
+    if (!isWip) {
+      router.push(`/projects/${project.slug}`);
+    }
+  };
+
+  const borderClasses = ['absolute', 'inset-0', 'rounded-xl', 'border', 'border-primary', 'pointer-events-none'];
+  if (isWip) {
+    borderClasses.push('grayscale', 'brightness-90');
+  }
 
   const CardContent = (
     // Main container for positioning, hover effects, and clipping
@@ -71,7 +87,11 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
           <p className="text-secondary mb-4 text-sm lg:text-lg font-mono">
             {project.description}
           </p>
-          <div className="flex flex-wrap gap-2">
+          <ActionButtons
+            repoUrl={project.repoUrl}
+            liveDemoUrl={project.liveDemoUrl}
+          />
+          <div className="flex flex-wrap gap-2 mt-6">
             {project.technologies.map((tech) => (
               <span key={tech} className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">
                 {tech}
@@ -82,8 +102,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
       </motion.div>
 
       {/* Layer 2: Border. Sits on top of content, gets grayscaled independently. */}
-      <div
-        className={`absolute inset-0 rounded-xl border border-primary ${isWip ? 'grayscale brightness-90' : ''}`}>
+      <div className={borderClasses.join(' ')}>
       </div>
 
       {/* Layer 3: Lock Icon and Text. Sits on top of everything, no filters. */}
@@ -102,6 +121,8 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
     <motion.div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={handleCardClick}
+      style={{ cursor: !isWip ? 'pointer' : 'default' }}
       initial={{ y: 0 }}
       animate={{
         scale: !isWip && isHovered ? 1.03 : 1,
@@ -113,11 +134,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
       }}
       className="h-full"
     >
-      {isWip ? (
-        <div>{CardContent}</div>
-      ) : (
-        <Link href={`/projects/${project.slug}`}>{CardContent}</Link>
-      )}
+      {CardContent}
     </motion.div>
   );
 };
