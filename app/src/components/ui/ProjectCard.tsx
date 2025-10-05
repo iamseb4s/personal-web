@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import React from 'react';
 import ActionButtons from './ActionButtons';
-import Link from 'next/link';
+import TechIcon from '@/components/ui/TechIcon';
 
 // Custom SVG icon with adjusted proportions.
 const WiderLockIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -92,11 +92,11 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
             liveDemoUrl={project.liveDemoUrl}
             size="small"
           />
-          <div className="flex flex-wrap gap-2 mt-6">
+          <div className="flex flex-wrap items-center gap-2 mt-6">
             {project.technologies.map((tech) => (
-              <span key={tech} className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">
-                {tech}
-              </span>
+              <div key={tech} title={tech} className="group flex h-8 w-8 items-center justify-center rounded-full bg-secondary/50 dark:bg-secondary/20 p-1.5 transition-transform duration-300 hover:scale-125">
+                <TechIcon name={tech} className="h-full w-full text-primary dark:text-secondary" />
+              </div>
             ))}
           </div>
         </div>
