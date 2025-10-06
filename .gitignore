@@ -3,26 +3,28 @@
 /app/GEMINI.md
 /app/gemini_context/*
 
-# Dependencias de la aplicación Next.js
+# Next.js application dependencies
 /app/node_modules/
 
-# Archivos de build de Next.js
+# Next.js build files
 /app/.next/
 /app/out/
 
-# Archivos de entorno local
+# Local environment files
 .env*.local
 .env
+.env.development
+.env.production
 
-# Archivos de log y debug
+# Log and debug files
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Archivos de sistema operativo
+# Operating system files
 .DS_Store
 
-# Archivos de TypeScript
+# TypeScript files
 /app/next-env.d.ts
 /app/*.tsbuildinfo
 
