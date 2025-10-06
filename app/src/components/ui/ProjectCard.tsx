@@ -47,6 +47,9 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const isWip = project.status !== 'completed';
 
+  // IMPORTANT: Any new interactive element added to this card must check for the `isWip`
+  // state to ensure it's properly disabled for non-completed projects.
+
   const handleCardClick = () => {
     if (!isWip) {
       router.push(`/projects/${project.slug}`);
@@ -91,13 +94,20 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
             repoUrl={project.repoUrl}
             liveDemoUrl={project.liveDemoUrl}
             size="small"
+            disabled={isWip}
           />
           <div className="flex flex-wrap items-center gap-2 mt-6">
-            {project.technologies.map((tech) => (
-              <div key={tech} title={tech} className="group flex h-8 w-8 items-center justify-center rounded-full bg-secondary/50 dark:bg-secondary/20 p-1.5 transition-transform duration-300 hover:scale-125">
-                <TechIcon name={tech} className="h-full w-full text-primary dark:text-secondary" />
-              </div>
-            ))}
+            {project.technologies.map((tech) => {
+              const hoverClasses = !isWip ? 'transition-transform duration-300 hover:scale-125' : '';
+              return (
+                <div
+                  key={tech}
+                  title={tech}
+                  className={`group flex h-8 w-8 items-center justify-center rounded-full bg-secondary/50 dark:bg-secondary/20 p-1.5 ${hoverClasses}`}>
+                  <TechIcon name={tech} className="h-full w-full text-primary dark:text-secondary" />
+                </div>
+              );
+            })}
           </div>
         </div>
       </motion.div>
