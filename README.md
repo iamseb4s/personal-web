@@ -76,7 +76,7 @@ The project follows a feature-oriented structure with a clear separation of conc
 │   ├── next.config.ts       # Next.js configuration
 │   ├── package.json         # Project dependencies and scripts
 │   └── tsconfig.json        # TypeScript configuration
-├── docker-compose.yml       # Development environment configuration
+├── docker-compose.dev.yml   # Development environment configuration
 ├── Dockerfile.dev           # Dockerfile for development
 ├── docker-compose.prod.yml  # Production environment configuration
 └── Dockerfile.prod          # Multi-stage Dockerfile for production
@@ -95,7 +95,7 @@ This is a quick reference for setting up the local development environment.
   2. **Build and run the development container:**
     This command builds the Docker image and starts the `dev-web` service in the background.
     ```sh
-    docker-compose up --build -d
+    docker compose -f docker-compose.dev.yml up --build -d
     ```
 
   3. **Access the application:**
