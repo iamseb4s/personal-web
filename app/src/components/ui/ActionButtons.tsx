@@ -24,9 +24,10 @@ type ActionButtonsProps = {
   repoUrl?: string;
   className?: string; // Prop for external styling classes
   size?: 'small' | 'normal';
+  disabled?: boolean;
 };
 
-const ActionButtons = ({ liveDemoUrl, repoUrl, className, size = 'normal' }: ActionButtonsProps) => {
+const ActionButtons = ({ liveDemoUrl, repoUrl, className, size = 'normal', disabled = false }: ActionButtonsProps) => {
   // If neither URL is provided, render nothing.
   if (!liveDemoUrl && !repoUrl) {
     return null;
@@ -37,6 +38,8 @@ const ActionButtons = ({ liveDemoUrl, repoUrl, className, size = 'normal' }: Act
     small: 'px-3 py-1 sm:px-3 sm:py-1 text-sm',
   };
 
+  const disabledClasses = disabled ? 'pointer-events-none' : '';
+
   // Use the external className, or a default if not provided
   return (
     <div className={className || 'mt-4 flex flex-wrap gap-2 sm:gap-4'}>
@@ -46,7 +49,7 @@ const ActionButtons = ({ liveDemoUrl, repoUrl, className, size = 'normal' }: Act
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
-          className={`flex items-center justify-center gap-2 rounded-full bg-primary font-mono font-medium text-primary-foreground transition-transform duration-300 ease-in-out hover:scale-105 border-2 border-secondary ${sizeClasses[size]}`}
+          className={`flex items-center justify-center gap-2 rounded-full bg-primary font-mono font-medium text-primary-foreground transition-transform duration-300 ease-in-out hover:scale-105 border-2 border-secondary ${sizeClasses[size]} ${disabledClasses}`}
         >
           <GlobeIcon className="h-4 w-4" />
           <span className="inline sm:hidden">Demo</span>
@@ -59,7 +62,7 @@ const ActionButtons = ({ liveDemoUrl, repoUrl, className, size = 'normal' }: Act
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
-          className={`flex items-center justify-center gap-2 rounded-full bg-secondary font-mono font-medium text-secondary-foreground transition-transform duration-300 ease-in-out hover:scale-105 ${sizeClasses[size]}`}
+          className={`flex items-center justify-center gap-2 rounded-full bg-secondary font-mono font-medium text-secondary-foreground transition-transform duration-300 ease-in-out hover:scale-105 ${sizeClasses[size]} ${disabledClasses}`}
         >
           <GitHubIcon className="h-4 w-4" />
           <span className="inline sm:hidden">Repo</span>
