@@ -82,7 +82,7 @@ const LightGBMIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 // Fallback component to display when an icon is not found
 const FallbackIcon = ({ name, className }: { name: string; className?: string }) => (
-  <span className={`font-sans text-3xl text-primary dark:text-secondary`}>
+  <span className={`font-sans text-3xl text-primary dark:text-secondary ${className || ''}`}>
     {name.charAt(0).toUpperCase()}
   </span>
 );
