@@ -66,20 +66,21 @@ The project follows a feature-oriented structure with a clear separation of conc
 
 ```
 ./
-├── app/                     # Main Next.js project folder
-│   ├── public/              # Static assets (images, fonts)
+├── app/                        # Main Next.js project folder
+│   ├── public/                 # Static assets (images, fonts)
 │   ├── src/
-│   │   ├── app/             # Next.js App Router: routes and pages
-│   │   ├── components/      # Reusable React components (UI, layout, sections)
-│   │   ├── content/         # MDX content files for projects
-│   │   └── lib/             # Core logic, data fetching, site metadata
-│   ├── next.config.ts       # Next.js configuration
-│   ├── package.json         # Project dependencies and scripts
-│   └── tsconfig.json        # TypeScript configuration
-├── docker-compose.dev.yml   # Development environment configuration
-├── Dockerfile.dev           # Dockerfile for development
-├── docker-compose.prod.yml  # Production environment configuration
-└── Dockerfile.prod          # Multi-stage Dockerfile for production
+│   │   ├── app/                # Next.js App Router: routes and pages
+│   │   ├── components/         # Reusable React components (UI, layout, sections)
+│   │   ├── content/            # MDX content files for projects
+│   │   └── lib/                # Core logic, data fetching, site metadata
+│   ├── next.config.ts          # Next.js configuration
+│   ├── package.json            # Project dependencies and scripts
+│   └── tsconfig.json           # TypeScript configuration
+├── docker-compose.dev.yml      # Development environment configuration
+├── Dockerfile.dev              # Dockerfile for development
+├── docker-compose.staging.yml  # Staging environment configuration
+├── docker-compose.prod.yml     # Production environment configuration
+└── Dockerfile.prod             # Multi-stage Dockerfile for production
 ```
 
 ## 🚀 Setup Guide
@@ -87,16 +88,54 @@ The project follows a feature-oriented structure with a clear separation of conc
 This is a quick reference for setting up the local development environment.
 
   1. **Clone the repository:**
-    ```sh
-    git clone https://github.com/iamseb4s/personal-web.git
-    cd personal-web
-    ```
+
+  ```sh
+  git clone https://github.com/iamseb4s/personal-web.git
+  cd personal-web
+  ```
 
   2. **Build and run the development container:**
     This command builds the Docker image and starts the `dev-web` service in the background.
-    ```sh
-    docker compose -f docker-compose.dev.yml up --build -d
-    ```
+
+  ```sh
+  docker compose -f docker-compose.dev.yml up --build -d
+  ```
 
   3. **Access the application:**
-    The portfolio is now running in development mode and is accessible at [http://localhost:3030](http://localhost:3030).
+    The portfolio is now running in development mode and is accessible at [http://localhost:4100](http://localhost:4100).
+
+## 🚢 CI/CD & Release Strategy
+
+This project employs a robust CI/CD strategy to ensure code quality, stability, and predictable releases. The workflow is designed to catch errors early and provide high confidence before deploying to production.
+
+### Key Features
+
+- **PR Quality Gate:** Every pull request to the `main` branch automatically triggers a workflow that performs linting, type-checking, building, and security audits. Merging is blocked until all checks pass, ensuring the `main` branch is always in a deployable state.
+
+- **Multi-Environment Workflow:** The project utilizes three distinct environments, each with a specific purpose:
+  - **Development:** A local, containerized environment for feature development with hot-reloading.
+  - **Staging:** A production-like environment for verifying release candidates before the final deployment. It uses the production build to ensure an accurate test.
+  - **Production:** The live user-facing environment, deployed automatically from tagged releases on the `main` branch.
+
+- **Release-Based Deployments:** Production deployments are automated and triggered exclusively by the creation of a new GitHub Release on a tagged commit. This provides a clear, auditable history of what version is deployed and when.
+
+<details>
+<summary><strong>View Step-by-Step Release Checklist</strong></summary>
+
+1. Open PR from `develop` to `main`. Wait for `Main Branch - Quality Check` workflow to pass.
+2. Merge PR into `main`.
+3. From `main`, create and push a release candidate tag (e.g., `git tag v1.1.0-rc.1` && `git push --tags`).
+4. On GitHub, publish a **pre-release** using the new RC tag.
+5. Verify in staging environment:
+
+  ```sh
+  git switch --detach v1.1.0-rc.1
+  docker compose -f docker-compose.staging.yml up -d --build
+  ```
+
+- Check on `http://localhost:4200`.
+
+6. Once verified, create and push the final tag from `main` (e.g., `git tag v1.1.0` && `git push --tags`).
+7. On GitHub, publish a new **full release** (ensure "pre-release" is unchecked) to trigger the production deployment.
+
+</details>
