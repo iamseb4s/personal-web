@@ -102,7 +102,7 @@ This is a quick reference for setting up the local development environment.
   ```
 
   3. **Access the application:**
-    The portfolio is now running in development mode and is accessible at [http://localhost:3030](http://localhost:3030).
+    The portfolio is now running in development mode and is accessible at [http://localhost:4100](http://localhost:4100).
 
 ## 🚢 CI/CD & Release Strategy
 
