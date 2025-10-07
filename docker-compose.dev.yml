@@ -4,12 +4,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
+    env_file:
+      - .env.development
     volumes:
       - ./app:/app
       - /app/node_modules
       - ./gemini:/root/.gemini
     ports:
-      - "3030:3000"
+      - "4100:3000"
     extra_hosts:
       - "host.docker.internal:127.0.0.1"
     environment:

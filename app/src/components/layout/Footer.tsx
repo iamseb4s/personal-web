@@ -2,11 +2,13 @@ import React from 'react';
 import Link from 'next/link';
 import Container from '@/components/ui/Container';
 
+import { siteMetadata } from '@/lib/site-metadata';
+
 const Footer = () => {
   const socialLinks = [
-    { name: 'GITHUB', url: 'https://github.com/sebasnolascop' },
-    { name: 'LINKEDIN', url: 'https://linkedin.com/in/sebasnolascop' },
-    { name: 'EMAIL', url: 'mailto:sebas@iamsebas.dev' },
+    { name: 'GITHUB', url: siteMetadata.github },
+    { name: 'LINKEDIN', url: siteMetadata.linkedin },
+    { name: 'EMAIL', url: siteMetadata.email },
   ];
 
   return (

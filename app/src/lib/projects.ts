@@ -20,6 +20,8 @@ export function getAllProjects() {
         technologies: string[];
         status: 'completed' | 'writing';
         date: string;
+        repoUrl?: string;
+        liveDemoUrl?: string;
       }),
     };
   });
@@ -39,11 +41,19 @@ export function getAllProjects() {
 export function getProjectBySlug(slug: string) {
   const fullPath = path.join(projectsDirectory, `${slug}.mdx`);
   const fileContents = fs.readFileSync(fullPath, 'utf8');
-  const { data, content } = matter(fileContents);
+
+  // Use gray-matter to separate frontmatter and content as text
+  const { data: frontmatter, content } = matter(fileContents);
+
+  // Calculate reading time from text
+  const wordsPerMinute = 200;
+  const numberOfWords = content.split(/\s+/).length;
+  const readingTime = Math.ceil(numberOfWords / wordsPerMinute);
 
   return {
     slug,
-    frontmatter: data,
-    content,
+    frontmatter,
+    content, // content as plain text
+    readingTime,
   };
 }
