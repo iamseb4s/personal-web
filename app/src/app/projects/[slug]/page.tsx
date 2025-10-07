@@ -14,8 +14,12 @@ export function generateStaticParams() {
   }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const { slug } = params;
+type PageProps = {
+  params: Promise<{ slug: string }>;
+};
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
   const project = getProjectBySlug(slug);
   if (!project) {
     return {
@@ -28,8 +32,8 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   };
 }
 
-export default function ProjectPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function ProjectPage({ params }: PageProps) {
+  const { slug } = await params;
   const project = getProjectBySlug(slug);
 
   if (!project) {
