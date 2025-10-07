@@ -11,6 +11,11 @@ COPY app/package*.json ./
 RUN npm install
 # Copy the rest of your application's source code
 COPY app/ ./
+
+# Run linting and security checks before building
+RUN npm run lint
+RUN npm audit --audit-level=high
+
 # Build the Next.js application for production
 RUN npm run build
 
