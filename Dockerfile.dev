@@ -6,6 +6,9 @@ RUN apk add --no-cache bash
 # Gemini CLI
 RUN npm install -g @google/gemini-cli
 
+# Claude Code
+RUN npm install -g @anthropic-ai/claude-code
+
 WORKDIR /app
 COPY ./app/package*.json ./
 
