@@ -10,10 +10,10 @@ RUN npm install -g @google/gemini-cli
 RUN npm install -g @anthropic-ai/claude-code
 
 WORKDIR /app
-COPY ./app/package*.json ./
+COPY ./apps/web/package*.json ./
 
 RUN npm install
-COPY ./app/. .
+COPY ./apps/web/. .
 EXPOSE 3000
 
 CMD ["npm", "run", "dev"]

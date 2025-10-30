@@ -1,6 +1,6 @@
 services:
   prod-web:
-    container_name: web-prod
+    container_name: prod-web
     build:
       context: .
       dockerfile: Dockerfile.prod
@@ -11,3 +11,34 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=production
+    depends_on:
+      - prod-cms
+
+  prod-cms:
+    container_name: prod-cms
+    build:
+      context: ./apps/cms
+    env_file:
+      - .env.production
+    ports:
+      - "4001:3000"
+    restart: unless-stopped
+    environment:
+      - MONGODB_URI=mongodb://prod-db:27017/portfolio-db
+      - PAYLOAD_SECRET=${PAYLOAD_SECRET}
+      - NODE_ENV=production
+    volumes:
+      - ./.data/uploads-prod:/uploads
+    depends_on:
+      - prod-db
+
+  prod-db:
+    container_name: prod-db
+    image: mongo:latest
+    env_file:
+      - .env.production
+    ports:
+      - "4002:27017"
+    restart: unless-stopped
+    volumes:
+      - ./.data/mongo-prod:/data/db

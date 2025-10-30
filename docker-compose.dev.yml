@@ -1,13 +1,13 @@
 services:
   dev-web:
-    container_name: personal-web-dev
+    container_name: dev-web
     build:
       context: .
       dockerfile: Dockerfile.dev
     env_file:
       - .env.development
     volumes:
-      - ./app:/app
+      - ./apps/web:/app
       - /app/node_modules
       - ./gemini:/root/.gemini
       - ./claude:/root/.claude
@@ -20,3 +20,29 @@ services:
       - GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT}
     tty: true
     stdin_open: true
+    depends_on:
+      - dev-cms
+
+  dev-cms:
+    container_name: dev-cms
+    build:
+      context: ./apps/cms
+    env_file:
+      - .env.development
+    ports:
+      - "4101:3000"
+    environment:
+      - MONGODB_URI=mongodb://dev-db:27017/portfolio-db
+      - PAYLOAD_SECRET=${PAYLOAD_SECRET}
+    volumes:
+      - ./.data/uploads-dev:/uploads
+    depends_on:
+      - dev-db
+
+  dev-db:
+    container_name: dev-db
+    image: mongo:latest
+    ports:
+      - "4102:27017"
+    volumes:
+      - ./.data/mongo-dev:/data/db

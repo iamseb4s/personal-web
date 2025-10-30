@@ -4,13 +4,13 @@ FROM node:20-alpine AS builder
 
 # Set working directory inside the container
 WORKDIR /app
-# Copy package files from your local 'app' directory into the container's /app
-COPY app/package*.json ./
+# Copy package files from your local 'apps/web' directory into the container's /app
+COPY apps/web/package*.json ./
 
 # Install all dependencies
 RUN npm install
 # Copy the rest of your application's source code
-COPY app/ ./
+COPY apps/web/ ./
 
 # Run linting and security checks before building
 RUN npm run lint
@@ -27,8 +27,8 @@ FROM node:20-alpine AS runner
 
 # Set working directory inside the container
 WORKDIR /app
-# Copy package files from your local 'app' directory
-COPY app/package*.json ./
+# Copy package files from your local 'apps/web' directory
+COPY apps/web/package*.json ./
 
 # Install ONLY production dependencies. This is crucial for security and image size.
 RUN npm ci --omit=dev

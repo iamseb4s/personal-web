@@ -1,6 +1,6 @@
 services:
   staging-web:
-    container_name: web-staging
+    container_name: staging-web
     build:
       context: .
       dockerfile: Dockerfile.prod
@@ -11,3 +11,34 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=production
+    depends_on:
+      - staging-cms
+
+  staging-cms:
+    container_name: staging-cms
+    build:
+      context: ./apps/cms
+    env_file:
+      - .env.staging
+    ports:
+      - "4201:3000"
+    restart: unless-stopped
+    environment:
+      - MONGODB_URI=mongodb://staging-db:27017/portfolio-db
+      - PAYLOAD_SECRET=${PAYLOAD_SECRET}
+      - NODE_ENV=production
+    volumes:
+      - ./.data/uploads-staging:/uploads
+    depends_on:
+      - staging-db
+
+  staging-db:
+    container_name: staging-db
+    image: mongo:latest
+    env_file:
+      - .env.staging
+    ports:
+      - "4202:27017"
+    restart: unless-stopped
+    volumes:
+      - ./.data/mongo-staging:/data/db
