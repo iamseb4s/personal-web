@@ -3,6 +3,10 @@
 /app/GEMINI.md
 /app/gemini_context/*
 
+# Claude Code
+/claude/
+/app/CLAUDE.md
+
 # Next.js application dependencies
 /app/node_modules/
 
