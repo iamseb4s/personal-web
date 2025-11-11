@@ -500,6 +500,14 @@ export interface ApiProjectProject extends Struct.CollectionTypeSchema {
           localized: false;
         };
       }>;
+    show_hero_image: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<false>;
     slug: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique &
@@ -508,18 +516,47 @@ export interface ApiProjectProject extends Struct.CollectionTypeSchema {
           localized: false;
         };
       }>;
-    technologies: Schema.Attribute.JSON &
-      Schema.Attribute.SetPluginOptions<{
-        i18n: {
-          localized: false;
-        };
-      }>;
+    technologies: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::technology.technology'
+    >;
     title: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
         };
       }>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiTechnologyTechnology extends Struct.CollectionTypeSchema {
+  collectionName: 'technologies';
+  info: {
+    displayName: 'Technology';
+    pluralName: 'technologies';
+    singularName: 'technology';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::technology.technology'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    projects: Schema.Attribute.Relation<'manyToMany', 'api::project.project'>;
+    publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1037,6 +1074,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::project.project': ApiProjectProject;
+      'api::technology.technology': ApiTechnologyTechnology;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

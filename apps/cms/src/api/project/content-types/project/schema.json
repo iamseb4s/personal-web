@@ -72,13 +72,15 @@
         "files"
       ]
     },
-    "technologies": {
-      "type": "json",
+    "show_hero_image": {
+      "type": "boolean",
       "pluginOptions": {
         "i18n": {
           "localized": false
         }
-      }
+      },
+      "required": true,
+      "default": false
     },
     "repo_url": {
       "type": "string",
@@ -107,6 +109,12 @@
         "text.text-block",
         "image.body-image"
       ]
+    },
+    "technologies": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::technology.technology",
+      "inversedBy": "projects"
     }
   }
 }

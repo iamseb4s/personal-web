@@ -7,8 +7,19 @@ export interface ImageBodyImage extends Struct.ComponentSchema {
     icon: 'picture';
   };
   attributes: {
+    caption: Schema.Attribute.Text;
     image: Schema.Attribute.Media<'images' | 'files'> &
       Schema.Attribute.Required;
+    width: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<100>;
   };
 }
 
