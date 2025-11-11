@@ -1,4 +1,3 @@
-import { getAllProjects, getProjectBySlug } from '@/lib/projects';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -6,55 +5,63 @@ import Image from 'next/image';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxComponents } from '@/mdx-components';
 import ActionButtons from '@/components/ui/ActionButtons';
+import { fetchAPI, getProjectBySlugFromAPI, getStrapiURL } from '@/lib/strapi';
+import readingTime from 'reading-time';
 
-export function generateStaticParams() {
-  const projects = getAllProjects();
-  return projects.map((project) => ({
+// Generate static paths for all projects
+export async function generateStaticParams() {
+  const projects = await fetchAPI('/projects');
+  return projects.data.map((project: { slug: string }) => ({
     slug: project.slug,
   }));
 }
 
 type PageProps = {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 };
 
+// Generate metadata for the page
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const { slug } = params;
+  const project = await getProjectBySlugFromAPI(slug);
   if (!project) {
     return {
       title: 'Project Not Found'
     }
   }
   return {
-    title: `${project.frontmatter.title} | iamsebas.dev`,
-    description: project.frontmatter.description as string,
+    title: `${project.title} | iamsebas.dev`,
+    description: project.description,
   };
 }
 
+// The main page component
 export default async function ProjectPage({ params }: PageProps) {
-  const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const { slug } = params;
+  const project = await getProjectBySlugFromAPI(slug);
 
   if (!project) {
     notFound();
   }
 
-  const formattedDate = new Date(project.frontmatter.date as string).toLocaleDateString('es-ES', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  // --- Process Strapi Dynamic Zone for Body Content ---
+  // This is a simplified approach: it combines all 'text.text-block' components
+  // into a single markdown string. It will ignore other component types.
+  const bodyContent = project.body
+    ?.filter((component: any) => component.__component === 'text.text-block')
+    .map((component: any) => component.content)
+    .join('\n\n') || '';
+  // ---
 
-  const hasHeroImage = project.frontmatter.hero_image === true;
+  const hasHeroImage = !!project.main_image?.data;
 
   return (
     <article>
       {hasHeroImage && (
         <div className="relative h-0 sm:h-40 md:h-60 w-full [mask-image:linear-gradient(to_bottom,black_5%,transparent_100%)]">
           <Image
-            src={project.frontmatter.main_image as string || '/project_default.png'}
-            alt={project.frontmatter.title as string}
+            src={getStrapiURL(project.main_image.data.attributes.url)}
+            alt={project.title}
             fill
             className="object-cover"
             priority
@@ -64,7 +71,7 @@ export default async function ProjectPage({ params }: PageProps) {
 
       <div className="container mx-auto max-w-screen-md lg:max-w-4xl px-4">
         <div className={`${hasHeroImage ? 'mt-14' : 'mt-16 sm:mt-24'} mb-12 text-center md:px-10`}>
-          <h1 className="font-sans text-5xl sm:text-5xl lg:text-6xl">{project.frontmatter.title as string}</h1>
+          <h1 className="font-sans text-5xl sm:text-5xl lg:text-6xl">{project.title}</h1>
         </div>
 
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-8 text-sm text-foreground/70 font-mono">
@@ -79,21 +86,28 @@ export default async function ProjectPage({ params }: PageProps) {
             <span className="group-hover:underline">iamsebas.dev</span>
           </Link>
           <div className="flex items-center gap-4">
-            <span>{`${project.readingTime} min de lectura`}</span>
+            <span>{`${Math.ceil(readingTime(bodyContent).minutes)} min de lectura`}</span>
             <span className="sm:inline">•</span>
-            <time dateTime={project.frontmatter.date as string}>{formattedDate}</time>
+            {project.created && (
+              <time dateTime={project.created}>
+                {new Date(project.created).toLocaleDateString('es-ES', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </time>
+            )}
           </div>
         </div>
 
-        {/* Action Buttons container */}
         <ActionButtons
-          repoUrl={project.frontmatter.repoUrl as string}
-          liveDemoUrl={project.frontmatter.liveDemoUrl as string}
+          repoUrl={project.repo_url}
+          liveDemoUrl={project.live_demo}
           className="flex justify-center mt-5 gap-6"
         />
 
         <div className="mx-auto max-w-full mt-20 mb-10">
-          <MDXRemote source={project.content} components={mdxComponents} />
+          <MDXRemote source={bodyContent} components={mdxComponents} />
         </div>
 
         <div className="mt-20 mb-20 text-center">
