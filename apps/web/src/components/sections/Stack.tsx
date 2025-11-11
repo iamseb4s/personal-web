@@ -1,11 +1,23 @@
 import React from 'react';
-import { getAllProjects } from '@/lib/projects';
 import Container from '@/components/ui/Container';
 import TechIcon from '@/components/ui/TechIcon';
+import { fetchAPI } from '@/lib/strapi';
 
-const Stack = () => {
-  const projects = getAllProjects();
-  const allTechnologies = projects.flatMap((project) => project.technologies);
+type StrapiTechnology = {
+  id: number;
+  name: string;
+};
+
+type StrapiProject = {
+  technologies: StrapiTechnology[];
+};
+
+const Stack = async () => {
+  const strapiData = await fetchAPI('/projects', { populate: '*' });
+
+  const allTechnologies = strapiData.data.flatMap((project: StrapiProject) =>
+    project.technologies.map(tech => tech.name)
+  );
   const uniqueTechnologies = [...new Set(allTechnologies)];
 
   return (

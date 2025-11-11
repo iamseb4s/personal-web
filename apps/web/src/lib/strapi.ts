@@ -60,7 +60,13 @@ export async function getProjectBySlugFromAPI(slug: string) {
         $eq: slug,
       },
     },
-    populate: '*', // Populate all fields
+    populate: {
+      main_image: true,
+      technologies: true,
+      body: {
+        populate: '*',
+      },
+    },
   });
   // The response for a filtered query is an array. We need to return the first element.
   if (data && data.data && data.data.length > 0) {
