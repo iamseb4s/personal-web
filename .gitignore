@@ -9,10 +9,13 @@
 
 # Next.js application dependencies
 /apps/web/node_modules/
+/apps/cms/node_modules/
 
 # Next.js build files
 /apps/web/.next/
 /apps/web/out/
+/apps/cms/.next/
+/apps/cms/out/
 
 # Local environment files
 .env*.local
@@ -32,6 +35,8 @@ yarn-error.log*
 # TypeScript files
 /apps/web/next-env.d.ts
 /apps/web/*.tsbuildinfo
+/apps/cms/next-env.d.ts
+/apps/cms/*.tsbuildinfo
 
 # Vercel
 /apps/web/.vercel/
