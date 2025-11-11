@@ -1,18 +1,21 @@
 # Gemini CLI
 /gemini/
-/app/GEMINI.md
-/app/gemini_context/*
+/apps/web/GEMINI.md
+/apps/web/gemini_context/*
 
 # Claude Code
 /claude/
-/app/CLAUDE.md
+/apps/web/CLAUDE.md
 
 # Next.js application dependencies
-/app/node_modules/
+/apps/web/node_modules/
+/apps/cms/node_modules/
 
 # Next.js build files
-/app/.next/
-/app/out/
+/apps/web/.next/
+/apps/web/out/
+/apps/cms/.next/
+/apps/cms/out/
 
 # Local environment files
 .env*.local
@@ -30,8 +33,10 @@ yarn-error.log*
 .DS_Store
 
 # TypeScript files
-/app/next-env.d.ts
-/app/*.tsbuildinfo
+/apps/web/next-env.d.ts
+/apps/web/*.tsbuildinfo
+/apps/cms/next-env.d.ts
+/apps/cms/*.tsbuildinfo
 
 # Vercel
-/app/.vercel/
+/apps/web/.vercel/
