@@ -26,6 +26,10 @@ type StrapiProject = {
 const Projects = async () => {
   const strapiData = await fetchAPI('/projects', { populate: '*' });
 
+  if (!strapiData || !strapiData.data) {
+    return null;
+  }
+
   // Sort projects: finished projects first, then by creation date
   strapiData.data.sort((a: StrapiProject, b: StrapiProject) => {
     // Sort by 'finished' status in descending order (true comes first)
@@ -45,7 +49,7 @@ const Projects = async () => {
     title: item.title,
     description: item.description || '',
     finished: item.finished,
-    technologies: item.technologies.map((tech) => tech.name) || [],
+    technologies: item.technologies ? item.technologies.map((tech) => tech.name) : [],
     repoUrl: item.repo_url,
     liveDemoUrl: item.live_demo || undefined,
     main_image: item.main_image

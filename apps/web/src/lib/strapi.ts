@@ -1,3 +1,4 @@
+import { p } from 'framer-motion/client';
 import qs from 'qs';
 
 /**
@@ -6,6 +7,12 @@ import qs from 'qs';
  * @returns {string} Full Strapi URL
  */
 export function getStrapiURL(path = '') {
+  if (path.startsWith('http')) {
+    return path;
+  }
+  if (path.startsWith('/uploads')) {
+    return `${process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337'}${path}`;
+  }
   const strapiUrl =
     typeof window === 'undefined'
       ? process.env.STRAPI_INTERNAL_URL
@@ -27,11 +34,12 @@ export async function fetchAPI(
   options = {}
 ) {
   // Merge default and user options
-  const mergedOptions = {
+  const mergedOptions: RequestInit = {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
     },
+    cache: 'no-store',
     ...options,
   };
 
@@ -54,20 +62,34 @@ export async function fetchAPI(
 }
 
 export async function getProjectBySlugFromAPI(slug: string) {
-  const data = await fetchAPI('/projects', {
+  const query = qs.stringify({
     filters: {
       slug: {
         $eq: slug,
       },
     },
     populate: {
-      main_image: true,
-      technologies: true,
+      main_image: {
+        fields: ['url'],
+      },
+      technologies: {
+        fields: ['name'],
+      },
       body: {
-        populate: '*',
+        on: {
+          'image.body-image': {
+            populate: 'image',
+          },
+          'text.text-block': {
+            populate: '*',
+          },
+        },
       },
     },
   });
+
+  const data = await fetchAPI(`/projects?${query}`);
+
   // The response for a filtered query is an array. We need to return the first element.
   if (data && data.data && data.data.length > 0) {
     return data.data[0];
