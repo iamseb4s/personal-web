@@ -4,4 +4,14 @@ export default ({ env }) => ({
   app: {
     keys: env.array('APP_KEYS'),
   },
+  admin: {
+    watchIgnoreFiles: [
+      '**/Dockerfile.dev',
+      '**/Dockerfile.prod',
+      '**/docker-compose.yml',
+      '**/.dockerignore',
+      '**/README.md',
+      '**/database/**',
+    ],
+  },
 });
