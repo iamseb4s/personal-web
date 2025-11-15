@@ -5,7 +5,7 @@ services:
       context: ./apps/web
       dockerfile: Dockerfile.prod
     env_file:
-      - .env.production
+      - ./apps/web/.env.production
     ports:
       - "4000:4000"
     depends_on:
@@ -20,7 +20,7 @@ services:
       context: ./apps/cms
       dockerfile: Dockerfile.prod
     env_file:
-      - .env.production
+      - ./apps/cms/.env.production
     ports:
       - "4001:1337"
     restart: unless-stopped
