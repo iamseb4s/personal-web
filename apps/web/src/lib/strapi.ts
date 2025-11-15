@@ -77,7 +77,7 @@ export async function getProjectBySlugFromAPI(slug: string) {
             populate: 'image',
           },
           'text.text-block': {
-            populate: '*',
+            fields: ['content'],
           },
         },
       },

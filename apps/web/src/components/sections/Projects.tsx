@@ -24,7 +24,16 @@ type StrapiProject = {
 };
 
 const Projects = async () => {
-  const strapiData = await fetchAPI('/projects', { populate: '*' });
+  const strapiData = await fetchAPI('/projects', {
+    populate: {
+      main_image: {
+        fields: ['url'],
+      },
+      technologies: {
+        fields: ['name'],
+      },
+    },
+  });
 
   if (!strapiData || !strapiData.data) {
     return null;
