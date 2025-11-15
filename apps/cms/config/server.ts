@@ -11,6 +11,7 @@ export default ({ env }) => ({
       '**/docker-compose.yml',
       '**/.dockerignore',
       '**/README.md',
+      '**/database/**',
     ],
   },
 });
