@@ -1,4 +1,3 @@
-import { p } from 'framer-motion/client';
 import qs from 'qs';
 
 /**
@@ -9,9 +8,6 @@ import qs from 'qs';
 export function getStrapiURL(path = '') {
   if (path.startsWith('http')) {
     return path;
-  }
-  if (path.startsWith('/uploads')) {
-    return `${process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337'}${path}`;
   }
   const strapiUrl =
     typeof window === 'undefined'
