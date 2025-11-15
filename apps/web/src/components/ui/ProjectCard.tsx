@@ -26,13 +26,13 @@ const WiderLockIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-// Define the type for a single project, now including status and main_image
+// Define the type for a single project, now including finished and main_image
 export type Project = {
   slug: string;
   title: string;
   description: string;
   technologies: string[];
-  status: 'writing' | 'completed';
+  finished: boolean;
   main_image?: string;
   repoUrl?: string;
   liveDemoUrl?: string;
@@ -45,7 +45,7 @@ type ProjectCardProps = {
 const ProjectCard = ({ project }: ProjectCardProps) => {
   const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
-  const isWip = project.status !== 'completed';
+  const isWip = !project.finished;
 
   // IMPORTANT: Any new interactive element added to this card must check for the `isWip`
   // state to ensure it's properly disabled for non-completed projects.
