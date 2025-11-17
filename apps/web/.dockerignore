@@ -1,0 +1,21 @@
+# Git
+.git
+.gitignore
+
+# Dependencies - Installed in a separate layer, should not be copied.
+node_modules
+
+# Environment variables - These are for runtime, not build time.
+# Injecting them into the build is a security risk.
+.env*
+!/.env.example
+
+# Next.js build output - This is an artifact, not a source.
+.next
+out
+
+# Documentation and log files
+README.md
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
