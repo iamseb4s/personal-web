@@ -9,16 +9,10 @@ node_modules
 .env*
 !/.env.example
 
-# Development database - CRITICAL: Prevents copying the DB into the build.
-database/*.sqlite
-
 # Strapi build artifacts and temporary files
 .strapi/
 dist/
 build/
-
-# User-uploaded content - Not part of the source code.
-public/uploads
 
 # Documentation and log files
 README.md

@@ -3,25 +3,21 @@ FROM node:20-alpine
 # Install system dependencies for Strapi
 RUN apk add --no-cache vips-dev
 
-# Create non-root user and group
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-
 # Set working directory
 WORKDIR /app
-RUN chown appuser:appgroup /app
 
-# Switch to the non-root user
-USER appuser
-
-# Copy package files with correct ownership and use npm ci
-COPY --chown=appuser:appgroup ./package*.json ./
+# Copy package files and use npm ci
+COPY ./package*.json ./
 RUN npm ci --omit=dev
 
-# Copy the rest of the application with correct ownership
-COPY --chown=appuser:appgroup . .
+# Copy the rest of the application
+COPY . .
 
 # Build the Strapi application
 RUN npm run build
+
+# Create the uploads folder, which is ignored by .dockerignore but required by Strapi
+RUN mkdir -p public/uploads
 
 # Expose the port Strapi will run on
 EXPOSE 1337
