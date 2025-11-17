@@ -33,3 +33,6 @@ yarn-error.log*
 /apps/cms/.strapi/
 /apps/cms/database/
 /apps/cms/dist/
+
+# Backups
+/backups/
