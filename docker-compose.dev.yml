@@ -1,22 +1,36 @@
 services:
   dev-web:
-    container_name: personal-web-dev
+    container_name: dev-web
     build:
-      context: .
+      context: ./apps/web
       dockerfile: Dockerfile.dev
     env_file:
-      - .env.development
+      - ./apps/web/.env.development
     volumes:
-      - ./app:/app
+      - ./apps/web:/app
       - /app/node_modules
-      - ./gemini:/root/.gemini
-      - ./claude:/root/.claude
     ports:
       - "4100:3000"
+    depends_on:
+      - dev-cms
     extra_hosts:
       - "host.docker.internal:127.0.0.1"
     environment:
       - WATCHPACK_POLLING=true
-      - GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT}
+    tty: true
+    stdin_open: true
+
+  dev-cms:
+    container_name: dev-cms
+    build:
+      context: ./apps/cms
+      dockerfile: Dockerfile.dev
+    env_file:
+      - ./apps/cms/.env.development
+    volumes:
+      - ./apps/cms:/app
+      - /app/node_modules
+    ports:
+      - "4101:1337"
     tty: true
     stdin_open: true
