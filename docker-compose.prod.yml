@@ -26,3 +26,5 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=production
+    volumes:
+      - ./apps/cms/database:/app/database

@@ -1,16 +1,22 @@
 # Stage 1: Builder
-# This stage installs all dependencies (including dev) and builds the application.
 FROM node:20-alpine AS builder
+
+# Create non-root user and group
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 # Set working directory inside the container
 WORKDIR /app
-# Copy package files from your local '.' directory into the container's /app
-COPY ./package*.json ./
+RUN chown appuser:appgroup /app
 
-# Install all dependencies
-RUN npm install
-# Copy the rest of your application's source code
-COPY . ./
+# Switch to the non-root user
+USER appuser
+
+# Copy package files with correct ownership and install all dependencies
+COPY --chown=appuser:appgroup ./package*.json ./
+RUN npm ci
+
+# Copy the rest of your application's source code with correct ownership
+COPY --chown=appuser:appgroup . .
 
 # Run linting and security checks before building
 RUN npm run lint
@@ -22,22 +28,28 @@ RUN npm run build
 # ---
 
 # Stage 2: Runner
-# This stage creates the final, lightweight image with only what's needed to run the app.
 FROM node:20-alpine AS runner
 
-# Set working directory inside the container
+# Create non-root user and group
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Set working directory and change its ownership (while it's empty)
 WORKDIR /app
-# Copy package files from your local '.' directory
-COPY ./package*.json ./
+RUN chown appuser:appgroup /app
 
-# Install ONLY production dependencies. This is crucial for security and image size.
+# Switch to the non-root user
+USER appuser
+
+# Copy package files with correct ownership and install ONLY production dependencies
+COPY --chown=appuser:appgroup ./package*.json ./
 RUN npm ci --omit=dev
-# Copy the essential built assets from the 'builder' stage
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/next.config.ts ./next.config.ts
 
-# Set NEXT_PORT environment variable to 4000
+# Copy essential built assets from the 'builder' stage with correct ownership
+COPY --from=builder --chown=appuser:appgroup /app/.next ./.next
+COPY --from=builder --chown=appuser:appgroup /app/public ./public
+COPY --from=builder --chown=appuser:appgroup /app/next.config.ts ./next.config.ts
+
+# Environment variables
 ENV PORT=4000
 # Expose the port the app will run on
 EXPOSE 4000
