@@ -25,9 +25,23 @@ type ActionButtonsProps = {
   className?: string; // Prop for external styling classes
   size?: 'small' | 'normal';
   disabled?: boolean;
+  liveDemoText: string;
+  repoText: string;
+  liveDemoTextShort: string;
+  repoTextShort: string;
 };
 
-const ActionButtons = ({ liveDemoUrl, repoUrl, className, size = 'normal', disabled = false }: ActionButtonsProps) => {
+export const ActionButtons = ({
+  liveDemoUrl,
+  repoUrl,
+  className,
+  size = 'normal',
+  disabled = false,
+  liveDemoText,
+  repoText,
+  liveDemoTextShort,
+  repoTextShort,
+}: ActionButtonsProps) => {
   // If neither URL is provided, render nothing.
   if (!liveDemoUrl && !repoUrl) {
     return null;
@@ -52,8 +66,8 @@ const ActionButtons = ({ liveDemoUrl, repoUrl, className, size = 'normal', disab
           className={`flex items-center justify-center gap-2 rounded-full bg-primary font-mono font-medium text-primary-foreground transition-transform duration-300 ease-in-out hover:scale-105 border-2 border-secondary ${sizeClasses[size]} ${disabledClasses}`}
         >
           <GlobeIcon className="h-4 w-4" />
-          <span className="inline sm:hidden">Demo</span>
-          <span className="hidden sm:inline">Live Demo</span>
+          <span className="inline sm:hidden">{liveDemoTextShort}</span>
+          <span className="hidden sm:inline">{liveDemoText}</span>
         </Link>
       )}
       {repoUrl && (
@@ -65,12 +79,10 @@ const ActionButtons = ({ liveDemoUrl, repoUrl, className, size = 'normal', disab
           className={`flex items-center justify-center gap-2 rounded-full bg-secondary font-mono font-medium text-secondary-foreground transition-transform duration-300 ease-in-out hover:scale-105 ${sizeClasses[size]} ${disabledClasses}`}
         >
           <GitHubIcon className="h-4 w-4" />
-          <span className="inline sm:hidden">Repo</span>
-          <span className="hidden sm:inline">Repositorio</span>
+          <span className="inline sm:hidden">{repoTextShort}</span>
+          <span className="hidden sm:inline">{repoText}</span>
         </Link>
       )}
     </div>
   );
 };
-
-export default ActionButtons;

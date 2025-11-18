@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import React from 'react';
-import ActionButtons from './ActionButtons';
+import { ActionButtons } from './ActionButtons';
 import TechIcon from '@/components/ui/TechIcon';
 
 // Custom SVG icon with adjusted proportions.
@@ -40,9 +40,21 @@ export type Project = {
 
 type ProjectCardProps = {
   project: Project;
+  projectWipText: string;
+  projectLiveDemoButtonText: string;
+  projectRepoButtonText: string;
+  projectLiveDemoButtonTextShort: string;
+  projectRepoButtonTextShort: string;
 };
 
-const ProjectCard = ({ project }: ProjectCardProps) => {
+export const ProjectCard = ({
+  project,
+  projectWipText,
+  projectLiveDemoButtonText,
+  projectRepoButtonText,
+  projectLiveDemoButtonTextShort,
+  projectRepoButtonTextShort,
+}: ProjectCardProps) => {
   const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
   const isWip = !project.finished;
@@ -95,6 +107,10 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
             liveDemoUrl={project.liveDemoUrl}
             size="small"
             disabled={isWip}
+            liveDemoText={projectLiveDemoButtonText}
+            repoText={projectRepoButtonText}
+            liveDemoTextShort={projectLiveDemoButtonTextShort}
+            repoTextShort={projectRepoButtonTextShort}
           />
           <div className="flex flex-wrap items-center gap-2 mt-6">
             {project.technologies.map((tech) => {
@@ -121,7 +137,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center pointer-events-none">
           <WiderLockIcon className="h-12 w-12 text-white" />
           <p className="mt-3 text-white font-sans text-3xl transition-opacity duration-250 opacity-100 group-hover:opacity-0">
-            Muy Pronto!
+            {projectWipText}
           </p>
         </div>
       )}
@@ -149,5 +165,3 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
     </motion.div>
   );
 };
-
-export default ProjectCard;
