@@ -2,13 +2,27 @@ import React from 'react';
 import Link from 'next/link';
 import Container from '@/components/ui/Container';
 
-import { siteMetadata } from '@/lib/site-metadata';
+interface FooterProps {
+  footerBuiltByPrefix: string;
+  footerAuthorName: string;
+  footerBuiltBySuffix: string;
+  socialLinkGithub: string;
+  socialLinkLinkedin: string;
+  socialLinkEmail: string;
+}
 
-const Footer = () => {
+export const Footer = ({
+  footerBuiltByPrefix,
+  footerAuthorName,
+  footerBuiltBySuffix,
+  socialLinkGithub,
+  socialLinkLinkedin,
+  socialLinkEmail,
+}: FooterProps) => {
   const socialLinks = [
-    { name: 'GITHUB', url: siteMetadata.github },
-    { name: 'LINKEDIN', url: siteMetadata.linkedin },
-    { name: 'EMAIL', url: siteMetadata.email },
+    { name: 'GITHUB', url: socialLinkGithub },
+    { name: 'LINKEDIN', url: socialLinkLinkedin },
+    { name: 'EMAIL', url: socialLinkEmail },
   ];
 
   return (
@@ -19,15 +33,12 @@ const Footer = () => {
         className="flex flex-col-reverse items-center justify-center gap-1 py-3 md:h-27 md:flex-row md:justify-between md:py-0"
       >
         <p className="text-center font-mono text-sm sm:text-md  md:text-lg leading-loose text-secondary-foreground md:text-left">
-          Built by{' '}
-          <Link
-            href="/"
-            className="relative group font-bold"
-          >
-            Sebas
+          {footerBuiltByPrefix}{' '}
+          <Link href="/" className="relative group font-bold">
+            {footerAuthorName}
             <span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-secondary-foreground transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out origin-center"></span>
           </Link>
-          .
+          {footerBuiltBySuffix}
         </p>
         <div className="flex items-center">
           {socialLinks.map((link, index) => (
@@ -53,5 +64,3 @@ const Footer = () => {
     </footer>
   );
 };
-
-export default Footer;

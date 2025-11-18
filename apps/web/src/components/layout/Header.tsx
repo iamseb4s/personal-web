@@ -3,7 +3,13 @@ import Link from 'next/link';
 import ThemeSwitcher from '@/components/ui/ThemeSwitcher';
 import Container from '@/components/ui/Container';
 
-const Header = () => {
+interface HeaderProps {
+  siteTitle: string;
+  navHome: string;
+  navProjects: string;
+}
+
+export const Header = ({ siteTitle, navHome, navProjects }: HeaderProps) => {
   return (
     <header className="sticky top-0 z-50 w-full bg-primary backdrop-blur-sm shadow-lg">
       <Container
@@ -12,21 +18,21 @@ const Header = () => {
         className="flex h-16 lg:h-20 items-center justify-between"
       >
         <Link href="/" className="font-sans text-2xl xl:text-4xl">
-          iamsebas.dev
+          {siteTitle}
         </Link>
         <nav className="flex items-center gap-4 sm:gap-6 md:gap-8 text-md xl:text-xl">
           <Link
             href="/#home"
             className="font-mono  relative group text-foreground transition-colors"
           >
-            INICIO
+            {navHome}
             <span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-foreground transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out origin-center "></span>
           </Link>
           <Link
             href="/#projects"
             className="font-mono relative group text-foreground transition-colors"
           >
-            PROYECTOS
+            {navProjects}
             <span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-foreground transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out origin-center"></span>
           </Link>
           <ThemeSwitcher />
@@ -35,5 +41,3 @@ const Header = () => {
     </header>
   );
 };
-
-export default Header;

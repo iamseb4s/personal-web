@@ -1,7 +1,7 @@
 import React from 'react';
-import ProjectCard, { type Project } from '@/components/ui/ProjectCard';
+import { ProjectCard, type Project } from '@/components/ui/ProjectCard';
 import Container from '@/components/ui/Container';
-import { fetchAPI, getStrapiURL } from '@/lib/strapi';
+import { getStrapiURL } from '@/lib/strapi';
 
 type StrapiTechnology = {
   id: number;
@@ -23,24 +23,40 @@ type StrapiProject = {
   } | null;
 };
 
-const Projects = async () => {
-  const strapiData = await fetchAPI('/projects', {
-    populate: {
-      main_image: {
-        fields: ['url'],
-      },
-      technologies: {
-        fields: ['name'],
-      },
-    },
-  });
+interface ImageProps {
+  url: string;
+  alternativeText?: string;
+  width: number;
+  height: number;
+}
 
-  if (!strapiData || !strapiData.data) {
+interface ProjectsProps {
+  projectsSectionTitle: string;
+  projectDefaultImage: ImageProps;
+  projectWipText: string;
+  projectLiveDemoButtonText: string;
+  projectRepoButtonText: string;
+  projectLiveDemoButtonTextShort: string;
+  projectRepoButtonTextShort: string;
+  projectsData: { data: StrapiProject[] };
+}
+
+export const Projects = async ({
+  projectsSectionTitle,
+  projectDefaultImage,
+  projectWipText,
+  projectLiveDemoButtonText,
+  projectRepoButtonText,
+  projectLiveDemoButtonTextShort,
+  projectRepoButtonTextShort,
+  projectsData,
+}: ProjectsProps) => {
+  if (!projectsData || !projectsData.data) {
     return null;
   }
 
   // Sort projects: finished projects first, then by creation date
-  strapiData.data.sort((a: StrapiProject, b: StrapiProject) => {
+  projectsData.data.sort((a: StrapiProject, b: StrapiProject) => {
     // Sort by 'finished' status in descending order (true comes first)
     const finishedSort = (b.finished ? 1 : 0) - (a.finished ? 1 : 0);
     if (finishedSort !== 0) {
@@ -53,7 +69,7 @@ const Projects = async () => {
     return dateB - dateA;
   });
 
-  const projects: Project[] = strapiData.data.map((item: StrapiProject) => ({
+  const projects: Project[] = projectsData.data.map((item: StrapiProject) => ({
     slug: item.slug,
     title: item.title,
     description: item.description || '',
@@ -63,23 +79,29 @@ const Projects = async () => {
     liveDemoUrl: item.live_demo || undefined,
     main_image: item.main_image
       ? getStrapiURL(item.main_image.url)
-      : '/project_default.png',
+      : getStrapiURL(projectDefaultImage.url),
   }));
 
   return (
     <section id="projects" className="py-8 md:py-12 lg:py-12 xl:py-20">
       <Container>
         <h2 className="text-center font-sans text-5xl sm:text-6xl md:text-6xl tracking-tight mb-6">
-          MIS PROYECTOS
+          {projectsSectionTitle}
         </h2>
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
           {projects.map((project) => (
-            <ProjectCard key={project.slug} project={project} />
+            <ProjectCard
+              key={project.slug}
+              project={project}
+              projectWipText={projectWipText}
+              projectLiveDemoButtonText={projectLiveDemoButtonText}
+              projectRepoButtonText={projectRepoButtonText}
+              projectLiveDemoButtonTextShort={projectLiveDemoButtonTextShort}
+              projectRepoButtonTextShort={projectRepoButtonTextShort}
+            />
           ))}
         </div>
       </Container>
     </section>
   );
 };
-
-export default Projects;

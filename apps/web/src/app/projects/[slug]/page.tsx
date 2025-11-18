@@ -4,9 +4,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxComponents } from '@/mdx-components';
-import ActionButtons from '@/components/ui/ActionButtons';
-import { getProjectBySlugFromAPI, getStrapiURL } from '@/lib/strapi';
+import { ActionButtons } from '@/components/ui/ActionButtons';
+import { getProjectBySlugFromAPI, getStrapiURL, getHomePageContent } from '@/lib/strapi';
 import readingTime from 'reading-time';
+import { HomePageProps } from '@/types/home-page';
 
 // Define types for Strapi data
 interface TextBlockComponent {
@@ -75,6 +76,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function ProjectPage({ params }: PageProps) {
   const { slug } = await params;
   const project: Project | null = await getProjectBySlugFromAPI(slug);
+  const homePageData = await getHomePageContent();
+  const homePageProps: HomePageProps = homePageData.data;
 
   if (!project) {
     notFound();
@@ -94,7 +97,7 @@ export default async function ProjectPage({ params }: PageProps) {
       .join('\n\n');
     const readingTimeText = `${Math.ceil(
       readingTime(totalMarkdownContent).minutes
-    )} min de lectura`;
+    )} ${homePageProps.project_reading_time_suffix}`;
 
     return (
       <>
@@ -102,12 +105,12 @@ export default async function ProjectPage({ params }: PageProps) {
           <Link href="/" className="flex items-center gap-2 group">
             <Image
               src="/sebas_icon.svg"
-              alt="iamsebas.dev logo"
+              alt={homePageProps.site_logo_alt_text}
               width={28}
               height={28}
               className="rounded-full bg-foreground/10 p-1"
             />
-            <span className="group-hover:underline">iamsebas.dev</span>
+            <span className="group-hover:underline">{homePageProps.site_logo_text}</span>
           </Link>
           <div className="flex items-center gap-4">
             <span>{readingTimeText}</span>
@@ -128,6 +131,10 @@ export default async function ProjectPage({ params }: PageProps) {
           repoUrl={project.repo_url}
           liveDemoUrl={project.live_demo}
           className="flex justify-center mt-5 gap-6"
+          liveDemoText={homePageProps.project_live_demo_button_text}
+          repoText={homePageProps.project_repo_button_text}
+          liveDemoTextShort={homePageProps.project_live_demo_button_text_short}
+          repoTextShort={homePageProps.project_repo_button_text_short}
         />
 
         <div className="mx-auto max-w-full mt-20 mb-10">
@@ -214,7 +221,7 @@ export default async function ProjectPage({ params }: PageProps) {
             href="/#projects"
             className="text-sm md:text-lg font-mono relative group text-foreground transition-colors"
           >
-            &larr; Back to All Projects
+            {homePageProps.project_back_button_text}
             <span className="absolute -bottom-1 left-[18px] md:left-[22px] w-9/10 h-px bg-foreground transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out origin-center "></span>
           </Link>
         </div>

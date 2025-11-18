@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { Bebas_Neue, IBM_Plex_Mono, Roboto, Noto_Serif } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/app/providers";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { getHomePageContent } from "@/lib/strapi";
+import { HomePageProps } from "@/types/home-page"; // Import HomePageProps from shared types
 
 const bebasNeue = Bebas_Neue({
   variable: "--font-bebas-neue",
@@ -42,11 +44,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const homePageData = await getHomePageContent();
+  const homePageProps: HomePageProps = homePageData.data;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -57,9 +62,20 @@ export default function RootLayout({
           defaultTheme="system"
           enableSystem
         >
-          <Header />
+          <Header
+            siteTitle={homePageProps.site_title}
+            navHome={homePageProps.header_nav_home}
+            navProjects={homePageProps.header_nav_projects}
+          />
           <main>{children}</main>
-          <Footer />
+          <Footer
+            footerBuiltByPrefix={homePageProps.footer_built_by_prefix}
+            footerAuthorName={homePageProps.footer_author_name}
+            footerBuiltBySuffix={homePageProps.footer_built_by_suffix}
+            socialLinkGithub={homePageProps.social_link_github}
+            socialLinkLinkedin={homePageProps.social_link_linkedin}
+            socialLinkEmail={homePageProps.social_link_email}
+          />
         </ThemeProvider>
       </body>
     </html>

@@ -2,15 +2,17 @@
 
 import Typewriter from 'typewriter-effect';
 
-const HeroSubtitle = () => {
+interface HeroSubtitleProps {
+  typewriterStrings: string;
+}
+
+export const HeroSubtitle = ({ typewriterStrings }: HeroSubtitleProps) => {
+  const strings = typewriterStrings ? typewriterStrings.split(',') : [];
+
   return (
     <Typewriter
       options={{
-        strings: [
-          'Data Scientist',
-          'Data Analyst',
-          'Lifelong Learner',
-        ],
+        strings: strings,
         autoStart: true,
         loop: true,
         delay: 50,
@@ -19,5 +21,3 @@ const HeroSubtitle = () => {
     />
   );
 };
-
-export default HeroSubtitle;

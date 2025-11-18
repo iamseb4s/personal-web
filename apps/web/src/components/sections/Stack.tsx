@@ -1,7 +1,6 @@
 import React from 'react';
 import Container from '@/components/ui/Container';
 import TechIcon from '@/components/ui/TechIcon';
-import { fetchAPI } from '@/lib/strapi';
 
 type StrapiTechnology = {
   id: number;
@@ -12,20 +11,17 @@ type StrapiProject = {
   technologies: StrapiTechnology[];
 };
 
-const Stack = async () => {
-  const strapiData: { data: StrapiProject[] } = await fetchAPI('/projects', {
-    populate: {
-      technologies: {
-        fields: ['name'],
-      },
-    },
-  });
+interface StackProps {
+  stackSectionTitle?: string;
+  projectsData: { data: StrapiProject[] };
+}
 
-  if (!strapiData || !strapiData.data) {
+export const Stack = async ({ stackSectionTitle, projectsData }: StackProps) => {
+  if (!projectsData || !projectsData.data) {
     return null;
   }
 
-  const allTechnologies: string[] = strapiData.data.flatMap(
+  const allTechnologies: string[] = projectsData.data.flatMap(
     (project: StrapiProject) =>
       project.technologies ? project.technologies.map((tech) => tech.name) : []
   );
@@ -34,6 +30,11 @@ const Stack = async () => {
   return (
     <section className="py-5 xl:py-0">
       <Container>
+        {stackSectionTitle && (
+          <h2 className="text-center font-sans text-5xl sm:text-6xl md:text-6xl tracking-tight mb-6">
+            {stackSectionTitle}
+          </h2>
+        )}
         <div className="flex flex-wrap justify-center gap-4 md:gap-6">
           {uniqueTechnologies.map((tech) => (
             <div
@@ -57,4 +58,3 @@ const Stack = async () => {
   );
 };
 
-export default Stack;
