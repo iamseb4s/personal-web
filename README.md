@@ -29,12 +29,12 @@ The project is organized into two primary applications under the `/apps` directo
 The entire lifecycle is containerized using Docker and Docker Compose, orchestrating the multi-service environment.
 
 - **Development (`docker-compose.dev.yml`):** Starts both `dev-web` and `dev-cms` services with hot-reloading enabled through volume mounts for a fast feedback loop.
-- **Staging & Production (`docker-compose.staging.yml`, `docker-compose.prod.yml`):** Use multi-stage Docker builds to create lean, secure, and optimized production images for both applications.
+- **Staging & Production (`docker-compose.staging.yml`, `docker-compose.prod.yml`):** Use multi-stage Docker builds to create lean, secure, and optimized production images. Bind mounts are used to ensure data persistence for the CMS database and uploads.
 
 ### 3. Content & Data Pipeline
 
-- **Strapi CMS:** All content, including project details, dynamic page components, and images, is managed through the Strapi admin panel.
-- **Next.js Data Fetching:** The Next.js application uses a dedicated library (`/apps/web/src/lib/strapi.ts`) to communicate with the Strapi API. Data fetching is performed server-side at runtime, ensuring content is always up-to-date without requiring a rebuild of the frontend.
+- **Strapi CMS:** All content, including global UI text, project details, dynamic page components, and images, is managed through the Strapi admin panel.
+- **Next.js Data Fetching:** The Next.js application uses a dedicated library (`/apps/web/src/lib/strapi.ts`) to communicate with the Strapi API. Data fetching is centralized and performed server-side at runtime, ensuring content is always up-to-date without requiring a rebuild of the frontend.
 
 ## 🛠️ Technology Stack
 
@@ -58,11 +58,11 @@ The entire lifecycle is containerized using Docker and Docker Compose, orchestra
 │       ├── src/
 │       │   ├── app/            # Next.js App Router: routes and pages
 │       │   ├── components/     # Reusable React components (UI, layout, sections)
-│       │   ├── content/        # MDX content files for projects (legacy, to be migrated)
-│       │   └── lib/            # Core logic, data fetching, site metadata
+│       │   ├── lib/            # Core logic, data fetching
+│       │   └── types/          # Shared TypeScript types
 │       ├── next.config.ts      # Next.js configuration
-│       ├── package.json        # Project dependencies and scripts
-│       └── tsconfig.json       # TypeScript configuration
+│       └── ...
+├── backup.sh                   # Script to backup Strapi databases
 ├── docker-compose.dev.yml      # Development environment configuration
 ├── docker-compose.staging.yml  # Staging environment configuration
 ├── docker-compose.prod.yml     # Production environment configuration
