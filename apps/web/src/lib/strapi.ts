@@ -106,47 +106,97 @@ export async function getProjectBySlugFromAPI(slug: string, locale: string) {
   return null;
 }
 
-export async function getHomePageContent(locale: string) {
+export async function getGlobalData(locale: string) {
   const query = qs.stringify({
     populate: {
-      hero_day_image: {
-        fields: ['url', 'alternativeText', 'width', 'height'],
+      site_logo: {
+        fields: ['url', 'alternativeText'],
       },
-      hero_night_image: {
-        fields: ['url', 'alternativeText', 'width', 'height'],
+      default_seo: {
+        fields: ['page_title', 'page_description'],
       },
-      project_default_image: {
-        fields: ['url', 'alternativeText', 'width', 'height'],
+    },
+    locale,
+  });
+
+  const data = await fetchAPI(`/global?${query}`);
+  return data;
+}
+
+export async function getHeaderData(locale: string) {
+  const query = qs.stringify({
+    populate: {
+      nav_links: {
+        fields: ['text', 'target_id'],
       },
-      // Populate all other text fields
-      fields: [
-        'site_title',
-        'social_link_github',
-        'social_link_linkedin',
-        'social_link_email',
-        'header_nav_home',
-        'header_nav_projects',
-        'hero_greeting',
-        'hero_description',
-        'hero_button_1',
-        'hero_button_2',
-        'hero_typewriter',
-        'projects_section_title',
-        'stack_section_title',
-        'footer_built_by_prefix',
-        'footer_author_name',
-        'footer_built_by_suffix',
-        'project_reading_time_suffix',
-        'project_back_button_text',
-        'project_live_demo_button_text',
-        'project_repo_button_text',
-        'project_wip_text',
-        'project_live_demo_button_text_short',
-        'project_repo_button_text_short',
-        'site_logo_alt_text',
-        'site_logo_text',
-        'site_metadata_title',
-      ],
+    },
+    locale,
+  });
+
+  const data = await fetchAPI(`/header?${query}`);
+  return data;
+}
+
+export async function getFooterData(locale: string) {
+  const query = qs.stringify({
+    populate: {
+      external_links: {
+        fields: ['text', 'url'],
+      },
+      copyright_author_link: {
+        fields: ['text', 'target_id'],
+      },
+    },
+    locale,
+  });
+
+  const data = await fetchAPI(`/footer?${query}`);
+  return data;
+}
+
+export async function getProjectPageData(locale: string) {
+  const query = qs.stringify({
+    populate: {
+      action_button_texts: {
+        fields: ['live_demo_button_text', 'live_demo_button_text_short', 'repo_button_text', 'repo_button_text_short'],
+      },
+      author_avatar: {
+        fields: ['url', 'alternativeText'],
+      },
+    },
+    locale,
+  });
+
+  const data = await fetchAPI(`/project-page?${query}`);
+  return data;
+}
+
+export async function getHomePageData(locale: string) {
+  const query = qs.stringify({
+    populate: {
+      seo: {
+        populate: '*',
+      },
+      sections: {
+        on: {
+          'sections.hero': {
+            populate: {
+              internal_link_button: true,
+              external_link_button: true,
+              day_image: { fields: ['url', 'alternativeText'] },
+              night_image: { fields: ['url', 'alternativeText'] },
+            }
+          },
+          'sections.projects-feed': {
+            populate: {
+              project_default_image: { fields: ['url'] }
+            }
+          },
+          'sections.stack': {
+            populate: '*'
+          },
+        },
+      },
     },
     locale,
   });
