@@ -9,12 +9,11 @@ import { getProjectBySlugFromAPI, getStrapiURL, getHomePageContent } from '@/lib
 import readingTime from 'reading-time';
 import { HomePageProps } from '@/types/home-page';
 
-// Define types for Strapi data
+// Define types for Strapi data (can be moved to a separate file if reused)
 interface TextBlockComponent {
   __component: 'text.text-block';
   content: string;
 }
-
 interface BodyImageComponent {
   __component: 'image.body-image';
   image: {
@@ -26,41 +25,16 @@ interface BodyImageComponent {
   caption?: string;
   width?: number;
 }
-
 type DynamicZoneComponent = TextBlockComponent | BodyImageComponent;
 
-interface Project {
-  title: string;
-  description: string;
-  created: string;
-  repo_url?: string;
-  live_demo?: string;
-  main_image: {
-    url: string;
-    width: number;
-    height: number;
-    alternativeText?: string;
-  } | null;
-  show_hero_image?: boolean;
-  body: DynamicZoneComponent[];
-}
-
-// Generate static paths for all projects
-// export async function generateStaticParams() {
-//   const projects = await fetchAPI('/projects');
-//   return projects.data.map((project: { slug: string }) => ({
-//     slug: project.slug,
-//   }));
-// }
-
-type PageProps = {
-  params: Promise<{ slug: string }>; // params is a promise
-};
-
 // Generate metadata for the page
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const project = await getProjectBySlugFromAPI(slug);
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string; lang: string };
+}): Promise<Metadata> {
+  const { slug, lang } = await params;
+  const project = await getProjectBySlugFromAPI(slug, lang);
   if (!project) {
     return {
       title: 'Project Not Found',
@@ -73,10 +47,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 // The main page component
-export default async function ProjectPage({ params }: PageProps) {
-  const { slug } = await params;
-  const project: Project | null = await getProjectBySlugFromAPI(slug);
-  const homePageData = await getHomePageContent();
+export default async function ProjectPage({
+  params,
+}: {
+  params: { slug: string; lang: string };
+}) {
+  const { slug, lang } = await params;
+  const [project, homePageData] = await Promise.all([
+    getProjectBySlugFromAPI(slug, lang),
+    getHomePageContent(lang),
+  ]);
   const homePageProps: HomePageProps = homePageData.data;
 
   if (!project) {
@@ -87,13 +67,9 @@ export default async function ProjectPage({ params }: PageProps) {
   const renderDynamicZone = (body: DynamicZoneComponent[]) => {
     if (!body || body.length === 0) return null;
 
-    // Calculate total markdown content for reading time
     const totalMarkdownContent = body
-      .filter(
-        (component): component is TextBlockComponent =>
-          component.__component === 'text.text-block'
-      )
-      .map((component) => component.content)
+      .filter((c): c is TextBlockComponent => c.__component === 'text.text-block')
+      .map((c) => c.content)
       .join('\n\n');
     const readingTimeText = `${Math.ceil(
       readingTime(totalMarkdownContent).minutes
@@ -102,7 +78,7 @@ export default async function ProjectPage({ params }: PageProps) {
     return (
       <>
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-8 text-sm text-foreground/70 font-mono">
-          <Link href="/" className="flex items-center gap-2 group">
+          <Link href={`/${lang}`} className="flex items-center gap-2 group">
             <Image
               src="/sebas_icon.svg"
               alt={homePageProps.site_logo_alt_text}
@@ -117,7 +93,7 @@ export default async function ProjectPage({ params }: PageProps) {
             <span className="sm:inline">•</span>
             {project.created && (
               <time dateTime={project.created}>
-                {new Date(project.created).toLocaleDateString('es-ES', {
+                {new Date(project.created).toLocaleDateString(lang, {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric',
@@ -142,31 +118,15 @@ export default async function ProjectPage({ params }: PageProps) {
             if (component.__component === 'text.text-block') {
               return (
                 <div key={index} className="mb-6">
-                  <MDXRemote
-                    source={component.content}
-                    components={mdxComponents}
-                  />
+                  <MDXRemote source={component.content} components={mdxComponents} />
                 </div>
               );
-            } else if (component.__component === 'image.body-image') {
-              const imageUrl = component.image
-                ? getStrapiURL(component.image.url)
-                : null;
-              const imageAlt =
-                component.image?.alternativeText ||
-                component.caption ||
-                project.title;
-              const imageWidth = component.width || 100;
-
-              return imageUrl && component.image ? (
-                <div
-                  key={index}
-                  className="my-8 text-center"
-                  style={{ width: `${imageWidth}%`, margin: '2rem auto' }}
-                >
+            } else if (component.__component === 'image.body-image' && component.image) {
+              return (
+                <div key={index} className="my-8 text-center" style={{ width: `${component.width || 100}%`, margin: '2rem auto' }}>
                   <Image
-                    src={imageUrl}
-                    alt={imageAlt}
+                    src={getStrapiURL(component.image.url)}
+                    alt={component.image.alternativeText || component.caption || project.title}
                     width={component.image.width}
                     height={component.image.height}
                     className="rounded-lg shadow-md mx-auto"
@@ -177,7 +137,7 @@ export default async function ProjectPage({ params }: PageProps) {
                     </p>
                   )}
                 </div>
-              ) : null;
+              );
             }
             return null;
           })}
@@ -218,7 +178,7 @@ export default async function ProjectPage({ params }: PageProps) {
 
         <div className="mt-20 mb-20 text-center">
           <Link
-            href="/#projects"
+            href={`/${lang}/#projects`}
             className="text-sm md:text-lg font-mono relative group text-foreground transition-colors"
           >
             {homePageProps.project_back_button_text}

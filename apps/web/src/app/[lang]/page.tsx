@@ -5,11 +5,13 @@ import ScrollReveal from "@/components/ui/ScrollReveal";
 import { getHomePageContent, fetchAPI } from "@/lib/strapi";
 import { HomePageProps } from "@/types/home-page"; // Import HomePageProps from shared types
 
-export default async function Home() {
-  const homePageData = await getHomePageContent();
+export default async function Home({ params }: { params: { lang: string } }) {
+  const { lang } = await params;
+  const homePageData = await getHomePageContent(lang);
   const homePageProps: HomePageProps = homePageData.data;
 
   const projectsData = await fetchAPI('/projects', {
+    locale: lang, // Fetch the specific locale
     populate: {
       main_image: {
         fields: ['url'],
@@ -40,6 +42,7 @@ export default async function Home() {
       </ScrollReveal>
       <ScrollReveal delay={0.25}>
         <Projects
+          lang={lang}
           projectsSectionTitle={homePageProps.projects_section_title}
           projectDefaultImage={homePageProps.project_default_image}
           projectWipText={homePageProps.project_wip_text}
