@@ -31,6 +31,8 @@ interface ImageProps {
 }
 
 interface ProjectsProps {
+  lang: string;
+  defaultLocale: string;
   projectsSectionTitle: string;
   projectDefaultImage: ImageProps;
   projectWipText: string;
@@ -42,6 +44,8 @@ interface ProjectsProps {
 }
 
 export const Projects = async ({
+  lang,
+  defaultLocale,
   projectsSectionTitle,
   projectDefaultImage,
   projectWipText,
@@ -93,6 +97,8 @@ export const Projects = async ({
             <ProjectCard
               key={project.slug}
               project={project}
+              lang={lang}
+              defaultLocale={defaultLocale}
               projectWipText={projectWipText}
               projectLiveDemoButtonText={projectLiveDemoButtonText}
               projectRepoButtonText={projectRepoButtonText}

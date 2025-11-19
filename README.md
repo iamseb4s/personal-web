@@ -6,35 +6,41 @@
 
 This repository contains the source code for my personal portfolio, meticulously crafted not just as a gallery of my work, but as a testament to modern, high-standard web development practices. The project emphasizes performance, developer experience (DX), and architectural robustness, built on a foundation of the latest industry-standard technologies. It has been architected as a **headless monorepo** to showcase a clear separation of concerns between the frontend presentation layer and the backend content management system.
 
-## Core Philosophy
+## ✨ Key Features
 
-- **Headless Architecture:** The frontend (Next.js) is completely decoupled from the backend (Strapi CMS). This allows for independent development, scaling, and deployment of the presentation layer and the content management system.
-- **Monorepo Structure:** Both the Next.js and Strapi applications reside within a single repository, managed as distinct services. This simplifies dependency management and cross-application consistency.
-- **Developer Experience (DX):** A fully containerized multi-service environment using Docker Compose ensures a consistent and hassle-free setup. Strict linting, formatting, and TypeScript configurations are enforced to maintain code quality.
-- **Performance & Scalability:** The architecture is designed for performance, with an optimized Next.js frontend consuming a powerful Strapi API. Multi-stage Docker builds create lean, secure production images.
+- **Headless Architecture:** Decoupled Next.js frontend and Strapi CMS backend for independent development and scaling.
+- **Monorepo Structure:** Simplifies dependency management and ensures consistency across the `web` and `cms` applications.
+- **Developer Experience (DX):** A fully containerized multi-service environment using Docker Compose ensures a consistent and hassle-free setup.
+- **Performance & Scalability:** Optimized Next.js frontend, powerful Strapi API, and multi-stage Docker builds create a lean and efficient application.
+- **Robust CI/CD Pipeline:** Automated quality checks on every pull request and release-based deployments to production ensure stability and predictability.
 
-## 🏛️ Architectural Deep Dive
+## 🏛️ System Architecture
 
 This project is a collection of deliberate engineering decisions to build a scalable and maintainable web application.
 
-### 1. Application Structure (Monorepo)
+### 1. Monorepo & Services
 
-The project is organized into two primary applications under the `/apps` directory:
+The project is organized as a monorepo containing two primary applications under the `/apps` directory:
 
-- **`/apps/web`:** A modern Next.js application responsible for the presentation layer (UI). It fetches all content from the Strapi API at runtime.
-- **`/apps/cms`:** A powerful Strapi v5 application that serves as the headless Content Management System. It exposes a robust API for projects, technologies, and other content.
+- **`/apps/web`:** A modern Next.js application responsible for the presentation layer (UI).
+- **`/apps/cms`:** A powerful Strapi v5 application that serves as the headless Content Management System.
 
-### 2. Containerization Strategy (Docker)
+This structure simplifies dependency management and ensures consistency across services.
+
+### 2. Content & Data Flow
+
+The architecture is fully headless. All content, including UI text, project details, and media, is managed through the Strapi CMS and consumed by the Next.js frontend via a REST API. This decouples the content from the code, allowing for content updates without requiring a frontend deployment. Data fetching is centralized in the Next.js app and performed server-side at runtime.
+
+### 3. Internationalization (i18n)
+
+The application features a robust internationalization strategy. A custom middleware (`/apps/web/src/middleware.ts`) intercepts incoming requests, dynamically fetches available locales from the Strapi API, and intelligently serves the default language from the root path (`/`) while using standard prefixes for all other languages (e.g., `/en`). This architecture is fully optimized for international SEO, with dynamically generated `hreflang` tags to ensure correct language targeting in search engines.
+
+### 4. Containerization
 
 The entire lifecycle is containerized using Docker and Docker Compose, orchestrating the multi-service environment.
 
-- **Development (`docker-compose.dev.yml`):** Starts both `dev-web` and `dev-cms` services with hot-reloading enabled through volume mounts for a fast feedback loop.
-- **Staging & Production (`docker-compose.staging.yml`, `docker-compose.prod.yml`):** Use multi-stage Docker builds to create lean, secure, and optimized production images. Bind mounts are used to ensure data persistence for the CMS database and uploads.
-
-### 3. Content & Data Pipeline
-
-- **Strapi CMS:** All content, including global UI text, project details, dynamic page components, and images, is managed through the Strapi admin panel.
-- **Next.js Data Fetching:** The Next.js application uses a dedicated library (`/apps/web/src/lib/strapi.ts`) to communicate with the Strapi API. Data fetching is centralized and performed server-side at runtime, ensuring content is always up-to-date without requiring a rebuild of the frontend.
+- **Development (`docker-compose.dev.yml`):** Starts both services with hot-reloading for a fast feedback loop.
+- **Staging & Production (`docker-compose.staging.yml`, `docker-compose.prod.yml`):** Use multi-stage builds to create lean, secure, and optimized production images, with bind mounts for data persistence.
 
 ## 🛠️ Technology Stack
 
@@ -56,10 +62,13 @@ The entire lifecycle is containerized using Docker and Docker Compose, orchestra
 │   └── web/                  # Next.js Frontend application
 │       ├── public/             # Static assets (images, fonts)
 │       ├── src/
-│       │   ├── app/            # Next.js App Router: routes and pages
-│       │   ├── components/     # Reusable React components (UI, layout, sections)
+│       │   ├── app/
+│       │   │   └── [lang]/     # Next.js App Router: Dynamic, localized routes
+│       │   ├── components/     # Reusable React components
+│       │   ├── hooks/          # Custom React hooks
 │       │   ├── lib/            # Core logic, data fetching
 │       │   └── types/          # Shared TypeScript types
+│       ├── middleware.ts       # I18n routing middleware
 │       ├── next.config.ts      # Next.js configuration
 │       └── ...
 ├── backup.sh                   # Script to backup Strapi databases

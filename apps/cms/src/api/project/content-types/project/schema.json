@@ -45,7 +45,7 @@
       "type": "boolean",
       "pluginOptions": {
         "i18n": {
-          "localized": false
+          "localized": true
         }
       },
       "default": false

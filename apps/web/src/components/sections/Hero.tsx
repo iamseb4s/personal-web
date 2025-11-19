@@ -13,6 +13,8 @@ interface ImageProps {
 }
 
 interface HeroProps {
+  lang: string;
+  defaultLocale: string;
   heroGreeting: string;
   heroDescription: string;
   heroButton1: string;
@@ -24,6 +26,8 @@ interface HeroProps {
 }
 
 export const Hero = ({
+  lang,
+  defaultLocale,
   heroGreeting,
   heroDescription,
   heroButton1,
@@ -33,6 +37,8 @@ export const Hero = ({
   heroTypewriter,
   socialLinkEmail,
 }: HeroProps) => {
+  const projectsAnchor = lang === defaultLocale ? '/#projects' : `/${lang}/#projects`;
+
   return (
     <section id="home" className="py-12 xl:py-20">
       <Container
@@ -52,7 +58,7 @@ export const Hero = ({
           </p>
           <div className="flex items-center justify-center lg:justify-start gap-4">
             <Link
-              href="/#projects"
+              href={projectsAnchor}
               className="inline-flex h-10 xl:h-12 items-center justify-center rounded-full bg-secondary dark:bg-primary px-6 md:px-8 text-md xl:text-xl font-mono text-secondary-foreground dark:text-primary-foreground shadow transition-colors hover:bg-secondary/90 hover:dark:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50"
             >
               {heroButton1}
@@ -74,6 +80,7 @@ export const Hero = ({
             fill
             sizes="(max-width: 1023px) 100vw, 45vw"
             className="object-cover transition-opacity duration-500 ease-in-out opacity-100 dark:opacity-0"
+            priority
           />
           <Image
             src={getStrapiURL(heroNightImage.url)}
@@ -81,6 +88,7 @@ export const Hero = ({
             fill
             sizes="(max-width: 1023px) 100vw, 45vw"
             className="object-cover transition-opacity duration-500 ease-in-out opacity-0 dark:opacity-100"
+            priority
           />
         </div>
       </Container>
