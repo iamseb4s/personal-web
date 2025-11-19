@@ -257,6 +257,14 @@
           "localized": true
         }
       }
+    },
+    "site_metadata_title": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     }
   }
 }
