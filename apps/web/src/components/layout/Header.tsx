@@ -10,19 +10,32 @@ interface LocaleInfo {
   code: string;
 }
 
+interface NavLink {
+  id: number;
+  text: string;
+  target_id: string;
+}
+
 interface HeaderProps {
-  siteTitle: string;
-  navHome: string;
-  navProjects: string;
+  displayText: string;
+  navLinks: NavLink[];
   lang: string;
   defaultLocale: string;
   availableLocales: LocaleInfo[];
 }
 
-export const Header = ({ siteTitle, navHome, navProjects, lang, defaultLocale, availableLocales }: HeaderProps) => {
+const getUrlFromTarget = (targetId: string, lang: string, defaultLocale: string): string => {
+  const isDefaultLang = lang === defaultLocale;
+  const prefix = isDefaultLang ? '' : `/${lang}`;
+
+  if (targetId === 'root') {
+    return prefix || '/';
+  }
+  return `${prefix}/#${targetId}`;
+};
+
+export const Header = ({ displayText, navLinks, lang, defaultLocale, availableLocales }: HeaderProps) => {
   const homePath = lang === defaultLocale ? '/' : `/${lang}`;
-  const homeAnchor = lang === defaultLocale ? '/#home' : `/${lang}/#home`;
-  const projectsAnchor = lang === defaultLocale ? '/#projects' : `/${lang}/#projects`;
 
   return (
     <header className="sticky top-0 z-50 w-full bg-primary backdrop-blur-sm shadow-lg">
@@ -32,25 +45,21 @@ export const Header = ({ siteTitle, navHome, navProjects, lang, defaultLocale, a
         className="flex h-16 lg:h-20 items-center justify-between"
       >
         <Link href={homePath} className="font-sans text-2xl xl:text-4xl">
-          {siteTitle}
+          {displayText}
         </Link>
         <nav className="flex items-center gap-4 sm:gap-6 md:gap-8 text-md xl:text-xl">
           {/* Text Buttons Group */}
           <div className="flex items-center gap-4 sm:gap-6 md:gap-8">
-            <Link
-              href={homeAnchor}
-              className="font-mono  relative group text-foreground transition-colors"
-            >
-              {navHome}
-              <span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-foreground transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out origin-center "></span>
-            </Link>
-            <Link
-              href={projectsAnchor}
-              className="font-mono relative group text-foreground transition-colors"
-            >
-              {navProjects}
-              <span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-foreground transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out origin-center"></span>
-            </Link>
+            {navLinks.map((link) => (
+              <Link
+                key={link.id}
+                href={getUrlFromTarget(link.target_id, lang, defaultLocale)}
+                className="font-mono  relative group text-foreground transition-colors"
+              >
+                {link.text}
+                <span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-foreground transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out origin-center "></span>
+              </Link>
+            ))}
           </div>
 
           {/* Circular Buttons Group */}
