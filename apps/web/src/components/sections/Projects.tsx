@@ -31,6 +31,7 @@ interface ImageProps {
 }
 
 interface ProjectsProps {
+  lang: string;
   projectsSectionTitle: string;
   projectDefaultImage: ImageProps;
   projectWipText: string;
@@ -42,6 +43,7 @@ interface ProjectsProps {
 }
 
 export const Projects = async ({
+  lang,
   projectsSectionTitle,
   projectDefaultImage,
   projectWipText,
@@ -93,6 +95,7 @@ export const Projects = async ({
             <ProjectCard
               key={project.slug}
               project={project}
+              lang={lang}
               projectWipText={projectWipText}
               projectLiveDemoButtonText={projectLiveDemoButtonText}
               projectRepoButtonText={projectRepoButtonText}

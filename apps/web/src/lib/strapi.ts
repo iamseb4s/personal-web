@@ -47,17 +47,25 @@ export async function fetchAPI(
 
   // Trigger API call
   const response = await fetch(requestUrl, mergedOptions);
+  const data = await response.json();
 
   // Handle response
   if (!response.ok) {
-    console.error(response.statusText);
+    // Log more details for debugging
+    console.error(`Error fetching ${requestUrl}: ${response.status} ${response.statusText}`);
     throw new Error(`An error occurred please try again`);
   }
-  const data = await response.json();
+  
   return data;
 }
 
-export async function getProjectBySlugFromAPI(slug: string) {
+// New function to fetch available locales from Strapi
+export async function getAvailableLocales() {
+  const data = await fetchAPI('/i18n/locales');
+  return data;
+}
+
+export async function getProjectBySlugFromAPI(slug: string, locale: string) {
   const query = qs.stringify({
     filters: {
       slug: {
@@ -86,6 +94,7 @@ export async function getProjectBySlugFromAPI(slug: string) {
         },
       },
     },
+    locale,
   });
 
   const data = await fetchAPI(`/projects?${query}`);
@@ -97,7 +106,7 @@ export async function getProjectBySlugFromAPI(slug: string) {
   return null;
 }
 
-export async function getHomePageContent() {
+export async function getHomePageContent(locale: string) {
   const query = qs.stringify({
     populate: {
       hero_day_image: {
@@ -136,8 +145,10 @@ export async function getHomePageContent() {
         'project_repo_button_text_short',
         'site_logo_alt_text',
         'site_logo_text',
+        'site_metadata_title',
       ],
     },
+    locale,
   });
 
   const data = await fetchAPI(`/home-page?${query}`);

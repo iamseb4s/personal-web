@@ -34,4 +34,5 @@ export interface HomePageProps {
   project_repo_button_text_short: string;
   site_logo_alt_text: string;
   site_logo_text: string;
+  site_metadata_title: string;
 }

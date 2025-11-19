@@ -74,6 +74,7 @@ export const Hero = ({
             fill
             sizes="(max-width: 1023px) 100vw, 45vw"
             className="object-cover transition-opacity duration-500 ease-in-out opacity-100 dark:opacity-0"
+            priority
           />
           <Image
             src={getStrapiURL(heroNightImage.url)}
@@ -81,6 +82,7 @@ export const Hero = ({
             fill
             sizes="(max-width: 1023px) 100vw, 45vw"
             className="object-cover transition-opacity duration-500 ease-in-out opacity-0 dark:opacity-100"
+            priority
           />
         </div>
       </Container>
