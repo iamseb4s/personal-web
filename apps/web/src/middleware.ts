@@ -1,57 +1,36 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getAvailableLocales } from './lib/strapi'; // Assuming getAvailableLocales is accessible here
+import { getAvailableLocales } from './lib/strapi';
 
-const PUBLIC_FILE = /\.(.*)$/; // Files
-
-async function getLocales() {
-  try {
-    const localesData = await getAvailableLocales();
-    const locales = localesData.map((locale: { code: string }) => locale.code);
-    const defaultLocale = localesData.find((locale: { isDefault: boolean }) => locale.isDefault)?.code || locales[0];
-    return { locales, defaultLocale };
-  } catch (error) {
-    console.error('Failed to fetch locales, falling back to defaults:', error);
-    // Fallback in case the API is down
-    return { locales: ['en', 'es-419'], defaultLocale: 'es-419' };
-  }
+async function getLocaleConfig() {
+  const localesData = await getAvailableLocales();
+  const locales = localesData.map((locale: { code: string }) => locale.code);
+  const defaultLocale = localesData.find((locale: { isDefault: boolean }) => locale.isDefault)?.code || 'es-419';
+  return { locales, defaultLocale };
 }
 
 export async function middleware(request: NextRequest) {
-  const { locales, defaultLocale } = await getLocales();
-
-  // Check if there is any supported locale in the pathname
+  const { locales, defaultLocale } = await getLocaleConfig();
   const pathname = request.nextUrl.pathname;
+
+  // Check if the pathname already has a locale prefix.
   const pathnameHasLocale = locales.some(
     (locale: string) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
   );
 
   if (pathnameHasLocale) {
-    return; // Already has a locale, do nothing
+    return; // If the locale is already in the path, do nothing.
   }
 
-  // Rewrite / to /<defaultLocale>
-  if (pathname === '/') {
-    return NextResponse.redirect(new URL(`/${defaultLocale}`, request.url));
-  }
-
-  // Skip public files
-  if (PUBLIC_FILE.test(pathname)) {
-    return;
-  }
-  
-  // Get locale from browser headers
-  const acceptLanguage = request.headers.get('accept-language');
-  const browserLang = acceptLanguage ? acceptLanguage.split(',')[0].toLowerCase() : defaultLocale;
-
-  // Find the best matching locale
-  const matchedLocale = locales.find((lang: string) => browserLang.startsWith(lang.split('-')[0]));
-  const locale = matchedLocale || defaultLocale;
-
-  // Redirect if no locale found
-  return NextResponse.redirect(new URL(`/${locale}${pathname}`, request.url));
+  // If no locale is present, rewrite the path to include the default locale.
+  // This makes the default language accessible at the root URL.
+  // e.g., a request to /projects -> /es-419/projects
+  return NextResponse.rewrite(
+    new URL(`/${defaultLocale}${pathname}`, request.url)
+  );
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'], // Exclude folders
+  // Matcher ignoring `/_next/` and `/api/`
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };
