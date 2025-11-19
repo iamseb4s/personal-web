@@ -5,7 +5,7 @@ import ScrollReveal from "@/components/ui/ScrollReveal";
 import { getHomePageContent, fetchAPI } from "@/lib/strapi";
 import { HomePageProps } from "@/types/home-page"; // Import HomePageProps from shared types
 
-export default async function Home({ params }: { params: { lang: string } }) {
+export default async function Home({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   const homePageData = await getHomePageContent(lang);
   const homePageProps: HomePageProps = homePageData.data;

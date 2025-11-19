@@ -23,7 +23,7 @@ export async function middleware(request: NextRequest) {
   // Check if there is any supported locale in the pathname
   const pathname = request.nextUrl.pathname;
   const pathnameHasLocale = locales.some(
-    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
+    (locale: string) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
   );
 
   if (pathnameHasLocale) {
@@ -45,7 +45,7 @@ export async function middleware(request: NextRequest) {
   const browserLang = acceptLanguage ? acceptLanguage.split(',')[0].toLowerCase() : defaultLocale;
 
   // Find the best matching locale
-  const matchedLocale = locales.find(lang => browserLang.startsWith(lang.split('-')[0]));
+  const matchedLocale = locales.find((lang: string) => browserLang.startsWith(lang.split('-')[0]));
   const locale = matchedLocale || defaultLocale;
 
   // Redirect if no locale found

@@ -31,7 +31,7 @@ type DynamicZoneComponent = TextBlockComponent | BodyImageComponent;
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string; lang: string };
+  params: Promise<{ slug: string; lang: string }>;
 }): Promise<Metadata> {
   const { slug, lang } = await params;
   const project = await getProjectBySlugFromAPI(slug, lang);
@@ -50,7 +50,7 @@ export async function generateMetadata({
 export default async function ProjectPage({
   params,
 }: {
-  params: { slug: string; lang: string };
+  params: Promise<{ slug: string; lang: string }>;
 }) {
   const { slug, lang } = await params;
   const [project, homePageData] = await Promise.all([

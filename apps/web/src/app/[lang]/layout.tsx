@@ -39,7 +39,7 @@ export const notoSerif = Noto_Serif({
 export async function generateMetadata({
   params,
 }: {
-  params: { lang: string };
+  params: Promise<{ lang: string }>;
 }): Promise<Metadata> {
   const { lang } = await params;
   const homePageData = await getHomePageContent(lang);
@@ -59,7 +59,7 @@ export default async function LangLayout({
   params,
 }: Readonly<{
   children: React.ReactNode;
-  params: { lang: string };
+  params: Promise<{ lang: string }>;
 }>) {
   const { lang } = await params;
   const [homePageData, localesData] = await Promise.all([
