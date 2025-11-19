@@ -25,55 +25,58 @@ type StrapiProject = {
 
 interface ImageProps {
   url: string;
-  alternativeText?: string;
-  width: number;
-  height: number;
+}
+
+interface ProjectsFeedData {
+  title: string;
+  wip_text: string;
+  project_default_image: ImageProps;
+}
+
+interface ProjectPageProps {
+  action_button_texts: {
+    live_demo_button_text: string;
+    repo_button_text: string;
+    live_demo_button_text_short: string;
+    repo_button_text_short: string;
+  }
 }
 
 interface ProjectsProps {
   lang: string;
   defaultLocale: string;
-  projectsSectionTitle: string;
-  projectDefaultImage: ImageProps;
-  projectWipText: string;
-  projectLiveDemoButtonText: string;
-  projectRepoButtonText: string;
-  projectLiveDemoButtonTextShort: string;
-  projectRepoButtonTextShort: string;
-  projectsData: { data: StrapiProject[] };
+  data: ProjectsFeedData;
+  projectPageProps: ProjectPageProps;
+  projectsData: StrapiProject[];
 }
 
 export const Projects = async ({
   lang,
   defaultLocale,
-  projectsSectionTitle,
-  projectDefaultImage,
-  projectWipText,
-  projectLiveDemoButtonText,
-  projectRepoButtonText,
-  projectLiveDemoButtonTextShort,
-  projectRepoButtonTextShort,
+  data,
+  projectPageProps,
   projectsData,
 }: ProjectsProps) => {
-  if (!projectsData || !projectsData.data) {
+  if (!projectsData) {
     return null;
   }
 
   // Sort projects: finished projects first, then by creation date
-  projectsData.data.sort((a: StrapiProject, b: StrapiProject) => {
-    // Sort by 'finished' status in descending order (true comes first)
+  projectsData.sort((a: StrapiProject, b: StrapiProject) => {
     const finishedSort = (b.finished ? 1 : 0) - (a.finished ? 1 : 0);
     if (finishedSort !== 0) {
       return finishedSort;
     }
-
-    // If 'finished' status is the same, sort by 'created' date in descending order (newest first)
     const dateA = new Date(a.created).getTime();
     const dateB = new Date(b.created).getTime();
     return dateB - dateA;
   });
 
-  const projects: Project[] = projectsData.data.map((item: StrapiProject) => ({
+  const defaultImageUrl = data.project_default_image
+    ? getStrapiURL(data.project_default_image.url)
+    : '';
+
+  const projects: Project[] = projectsData.map((item: StrapiProject) => ({
     slug: item.slug,
     title: item.title,
     description: item.description || '',
@@ -83,14 +86,14 @@ export const Projects = async ({
     liveDemoUrl: item.live_demo || undefined,
     main_image: item.main_image
       ? getStrapiURL(item.main_image.url)
-      : getStrapiURL(projectDefaultImage.url),
+      : defaultImageUrl,
   }));
 
   return (
     <section id="projects" className="py-8 md:py-12 lg:py-12 xl:py-20">
       <Container>
         <h2 className="text-center font-sans text-5xl sm:text-6xl md:text-6xl tracking-tight mb-6">
-          {projectsSectionTitle}
+          {data.title}
         </h2>
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
           {projects.map((project) => (
@@ -99,11 +102,11 @@ export const Projects = async ({
               project={project}
               lang={lang}
               defaultLocale={defaultLocale}
-              projectWipText={projectWipText}
-              projectLiveDemoButtonText={projectLiveDemoButtonText}
-              projectRepoButtonText={projectRepoButtonText}
-              projectLiveDemoButtonTextShort={projectLiveDemoButtonTextShort}
-              projectRepoButtonTextShort={projectRepoButtonTextShort}
+              projectWipText={data.wip_text}
+              liveDemoText={projectPageProps.action_button_texts?.live_demo_button_text}
+              repoText={projectPageProps.action_button_texts?.repo_button_text}
+              liveDemoTextShort={projectPageProps.action_button_texts?.live_demo_button_text_short}
+              repoTextShort={projectPageProps.action_button_texts?.repo_button_text_short}
             />
           ))}
         </div>

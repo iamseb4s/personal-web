@@ -26,14 +26,14 @@ const WiderLockIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-// Define the type for a single project, now including finished and main_image
+// Define the type for a single project
 export type Project = {
   slug: string;
   title: string;
   description: string;
   technologies: string[];
   finished: boolean;
-  main_image?: string;
+  main_image: string; // Now required, as fallback is handled by parent
   repoUrl?: string;
   liveDemoUrl?: string;
 };
@@ -43,10 +43,10 @@ type ProjectCardProps = {
   lang: string;
   defaultLocale: string;
   projectWipText: string;
-  projectLiveDemoButtonText: string;
-  projectRepoButtonText: string;
-  projectLiveDemoButtonTextShort: string;
-  projectRepoButtonTextShort: string;
+  liveDemoText?: string;
+  repoText?: string;
+  liveDemoTextShort?: string;
+  repoTextShort?: string;
 };
 
 export const ProjectCard = ({
@@ -54,10 +54,10 @@ export const ProjectCard = ({
   lang,
   defaultLocale,
   projectWipText,
-  projectLiveDemoButtonText,
-  projectRepoButtonText,
-  projectLiveDemoButtonTextShort,
-  projectRepoButtonTextShort,
+  liveDemoText,
+  repoText,
+  liveDemoTextShort,
+  repoTextShort,
 }: ProjectCardProps) => {
   const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
@@ -95,7 +95,7 @@ export const ProjectCard = ({
       >
         <div className="relative h-40 lg:h-50 xl:h-60 w-full">
           <Image
-            src={project.main_image || '/project_default.png'} // Use main_image or fallback to default
+            src={project.main_image} // Now just uses the provided URL
             alt={`Image of ${project.title}`}
             fill
             sizes="(max-width: 767px) 100vw, 50vw"
@@ -114,10 +114,10 @@ export const ProjectCard = ({
             liveDemoUrl={project.liveDemoUrl}
             size="small"
             disabled={isWip}
-            liveDemoText={projectLiveDemoButtonText}
-            repoText={projectRepoButtonText}
-            liveDemoTextShort={projectLiveDemoButtonTextShort}
-            repoTextShort={projectRepoButtonTextShort}
+            liveDemoText={liveDemoText}
+            repoText={repoText}
+            liveDemoTextShort={liveDemoTextShort}
+            repoTextShort={repoTextShort}
           />
           <div className="flex flex-wrap items-center gap-2 mt-6">
             {project.technologies.map((tech) => {

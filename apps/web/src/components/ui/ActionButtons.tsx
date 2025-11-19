@@ -25,10 +25,10 @@ type ActionButtonsProps = {
   className?: string; // Prop for external styling classes
   size?: 'small' | 'normal';
   disabled?: boolean;
-  liveDemoText: string;
-  repoText: string;
-  liveDemoTextShort: string;
-  repoTextShort: string;
+  liveDemoText?: string;
+  repoText?: string;
+  liveDemoTextShort?: string;
+  repoTextShort?: string;
 };
 
 export const ActionButtons = ({

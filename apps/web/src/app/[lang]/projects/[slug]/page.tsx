@@ -5,9 +5,9 @@ import Image from 'next/image';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxComponents } from '@/mdx-components';
 import { ActionButtons } from '@/components/ui/ActionButtons';
-import { getProjectBySlugFromAPI, getStrapiURL, getHomePageContent, getAvailableLocales } from '@/lib/strapi';
+import { getProjectBySlugFromAPI, getStrapiURL, getAvailableLocales, getProjectPageData, getGlobalData } from '@/lib/strapi';
 import readingTime from 'reading-time';
-import { HomePageProps } from '@/types/home-page';
+import { GlobalData, ProjectPageData } from '@/types/strapi';
 
 // Define types for Strapi data (can be moved to a separate file if reused)
 interface TextBlockComponent {
@@ -32,16 +32,17 @@ interface Locale {
   isDefault: boolean;
 }
 
-// Generate metadata for the page
-export async function generateMetadata({
-  params,
-}: {
+interface PageProps {
   params: Promise<{ slug: string; lang: string }>;
-}): Promise<Metadata> {
+}
+
+// Generate metadata for the page
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug, lang } = await params;
-  const [project, localesData] = await Promise.all([
+  const [project, localesData, globalData] = await Promise.all([
     getProjectBySlugFromAPI(slug, lang),
     getAvailableLocales(),
+    getGlobalData(lang),
   ]);
 
   if (!project) {
@@ -50,6 +51,7 @@ export async function generateMetadata({
     };
   }
 
+  const globalProps: GlobalData = globalData.data;
   const defaultLocale = localesData.find((l: Locale) => l.isDefault)?.code || 'es-419';
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:4100';
 
@@ -60,7 +62,7 @@ export async function generateMetadata({
   });
 
   return {
-    title: `${project.title} | iamsebas.dev`,
+    title: `${project.title} | ${globalProps.site_brand_name}`,
     description: project.description,
     alternates: {
       canonical: `${siteUrl}/${lang === defaultLocale ? '' : lang + '/'}projects/${slug}`,
@@ -70,27 +72,23 @@ export async function generateMetadata({
 }
 
 // The main page component
-export default async function ProjectPage({
-  params,
-}: {
-  params: Promise<{ slug: string; lang: string }>;
-}) {
+export default async function ProjectPage({ params }: PageProps) {
   const { slug, lang } = await params;
-  const [project, homePageData, localesData] = await Promise.all([
+  const [project, projectPageData, localesData] = await Promise.all([
     getProjectBySlugFromAPI(slug, lang),
-    getHomePageContent(lang),
+    getProjectPageData(lang),
     getAvailableLocales(),
   ]);
-
-  const homePageProps: HomePageProps = homePageData.data;
-  const defaultLocale = localesData.find((l: Locale) => l.isDefault)?.code || 'es-419';
-
-  const homePath = lang === defaultLocale ? '/' : `/${lang}`;
-  const projectsPath = lang === defaultLocale ? '/#projects' : `/${lang}/#projects`;
 
   if (!project) {
     notFound();
   }
+
+  const projectPageProps: ProjectPageData = projectPageData.data;
+  const defaultLocale = localesData.find((l: Locale) => l.isDefault)?.code || 'es-419';
+
+  const homePath = lang === defaultLocale ? '/' : `/${lang}`;
+  const projectsPath = lang === defaultLocale ? '/#projects' : `/${lang}/#projects`;
 
   // --- Render Dynamic Zone Content ---
   const renderDynamicZone = (body: DynamicZoneComponent[]) => {
@@ -102,20 +100,22 @@ export default async function ProjectPage({
       .join('\n\n');
     const readingTimeText = `${Math.ceil(
       readingTime(totalMarkdownContent).minutes
-    )} ${homePageProps.project_reading_time_suffix}`;
+    )} ${projectPageProps.reading_time_suffix}`;
 
     return (
       <>
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-8 text-sm text-foreground/70 font-mono">
           <Link href={homePath} className="flex items-center gap-2 group">
-            <Image
-              src="/sebas_icon.svg"
-              alt={homePageProps.site_logo_alt_text}
-              width={28}
-              height={28}
-              className="rounded-full bg-foreground/10 p-1"
-            />
-            <span className="group-hover:underline">{homePageProps.site_logo_text}</span>
+            {projectPageProps.author_avatar?.url && (
+              <Image
+                src={getStrapiURL(projectPageProps.author_avatar.url)}
+                alt={projectPageProps.author_avatar.alternativeText || projectPageProps.author_name}
+                width={28}
+                height={28}
+                className="rounded-full bg-foreground/10 p-1"
+              />
+            )}
+            <span className="group-hover:underline">{projectPageProps.author_name}</span>
           </Link>
           <div className="flex items-center gap-4">
             <span>{readingTimeText}</span>
@@ -136,10 +136,10 @@ export default async function ProjectPage({
           repoUrl={project.repo_url}
           liveDemoUrl={project.live_demo}
           className="flex justify-center mt-5 gap-6"
-          liveDemoText={homePageProps.project_live_demo_button_text}
-          repoText={homePageProps.project_repo_button_text}
-          liveDemoTextShort={homePageProps.project_live_demo_button_text_short}
-          repoTextShort={homePageProps.project_repo_button_text_short}
+          liveDemoText={projectPageProps.action_button_texts?.live_demo_button_text}
+          repoText={projectPageProps.action_button_texts?.repo_button_text}
+          liveDemoTextShort={projectPageProps.action_button_texts?.live_demo_button_text_short}
+          repoTextShort={projectPageProps.action_button_texts?.repo_button_text_short}
         />
 
         <div className="mx-auto max-w-full mt-20 mb-10">
@@ -210,7 +210,7 @@ export default async function ProjectPage({
             href={projectsPath}
             className="text-sm md:text-lg font-mono relative group text-foreground transition-colors"
           >
-            {homePageProps.project_back_button_text}
+            {projectPageProps.back_button_text}
             <span className="absolute -bottom-1 left-[18px] md:left-[22px] w-9/10 h-px bg-foreground transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out origin-center "></span>
           </Link>
         </div>

@@ -11,17 +11,21 @@ type StrapiProject = {
   technologies: StrapiTechnology[];
 };
 
-interface StackProps {
-  stackSectionTitle?: string;
-  projectsData: { data: StrapiProject[] };
+interface StackSectionData {
+  title: string;
 }
 
-export const Stack = async ({ stackSectionTitle, projectsData }: StackProps) => {
-  if (!projectsData || !projectsData.data) {
+interface StackProps {
+  data: StackSectionData;
+  projectsData: StrapiProject[];
+}
+
+export const Stack = async ({ data, projectsData }: StackProps) => {
+  if (!projectsData) {
     return null;
   }
 
-  const allTechnologies: string[] = projectsData.data.flatMap(
+  const allTechnologies: string[] = projectsData.flatMap(
     (project: StrapiProject) =>
       project.technologies ? project.technologies.map((tech) => tech.name) : []
   );
@@ -30,9 +34,9 @@ export const Stack = async ({ stackSectionTitle, projectsData }: StackProps) => 
   return (
     <section className="py-5 xl:py-0">
       <Container>
-        {stackSectionTitle && (
+        {data.title && (
           <h2 className="text-center font-sans text-5xl sm:text-6xl md:text-6xl tracking-tight mb-6">
-            {stackSectionTitle}
+            {data.title}
           </h2>
         )}
         <div className="flex flex-wrap justify-center gap-4 md:gap-6">
@@ -57,4 +61,3 @@ export const Stack = async ({ stackSectionTitle, projectsData }: StackProps) => 
     </section>
   );
 };
-

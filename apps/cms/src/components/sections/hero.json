@@ -1,0 +1,48 @@
+{
+  "collectionName": "components_sections_heroes",
+  "info": {
+    "displayName": "Hero",
+    "icon": "apps"
+  },
+  "options": {},
+  "attributes": {
+    "greeting": {
+      "type": "string"
+    },
+    "typewriter_text": {
+      "type": "text"
+    },
+    "description": {
+      "type": "text"
+    },
+    "internal_link_button": {
+      "type": "component",
+      "component": "link.nav-link",
+      "repeatable": false
+    },
+    "external_link_button": {
+      "type": "component",
+      "component": "link.external-link",
+      "repeatable": false
+    },
+    "day_image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ]
+    },
+    "night_image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ]
+    }
+  },
+  "config": {}
+}

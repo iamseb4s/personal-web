@@ -3,13 +3,8 @@ import { Bebas_Neue, IBM_Plex_Mono, Roboto, Noto_Serif } from 'next/font/google'
 import './globals.css'; // Global styles
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { getHomePageContent, getAvailableLocales } from '@/lib/strapi';
-import { HomePageProps } from '@/types/home-page';
-
-interface Locale {
-  code: string;
-  isDefault: boolean;
-}
+import { getAvailableLocales, getGlobalData, getStrapiURL, getHeaderData, getFooterData } from '@/lib/strapi';
+import { GlobalData, HeaderData, FooterData, Locale } from '@/types/strapi';
 
 export const bebasNeue = Bebas_Neue({
   variable: '--font-bebas-neue',
@@ -47,11 +42,19 @@ export async function generateMetadata({
   params: Promise<{ lang: string }>;
 }): Promise<Metadata> {
   const { lang } = await params;
-  const [homePageData, localesData] = await Promise.all([
-    getHomePageContent(lang),
+  const [globalResponse, localesData] = await Promise.all([
+    getGlobalData(lang),
     getAvailableLocales(),
   ]);
-  const homePageProps: HomePageProps = homePageData.data;
+
+  if (!globalResponse.data) {
+    return {
+      title: 'iamsebas.dev | Content Error',
+      description: 'Global content is not available. Please check the CMS.',
+    };
+  }
+
+  const globalProps: GlobalData = globalResponse.data;
   const defaultLocale = localesData.find((l: Locale) => l.isDefault)?.code || 'es-419';
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:4100';
 
@@ -61,17 +64,26 @@ export async function generateMetadata({
     alternates[locale.code] = `${siteUrl}${localePath}`;
   });
 
-  return {
-    title: homePageProps.site_metadata_title,
-    description: homePageProps.hero_description,
-    icons: {
-      icon: '/sebas_icon.svg',
-    },
+  const pageTitle = globalProps.default_seo?.page_title ? `${globalProps.default_seo.page_title} | ${globalProps.site_brand_name}` : globalProps.site_brand_name;
+  const pageDescription = globalProps.default_seo?.page_description || '';
+  const siteLogoUrl = globalProps.site_logo?.url;
+
+  const metadata: Metadata = {
+    title: pageTitle,
+    description: pageDescription,
     alternates: {
       canonical: `${siteUrl}/${lang === defaultLocale ? '' : lang}`,
       languages: alternates,
     },
   };
+
+  if (siteLogoUrl) {
+    metadata.icons = {
+      icon: getStrapiURL(siteLogoUrl),
+    };
+  }
+
+  return metadata;
 }
 
 export default async function LangLayout({
@@ -82,20 +94,22 @@ export default async function LangLayout({
   params: Promise<{ lang: string }>;
 }>) {
   const { lang } = await params;
-  const [homePageData, localesData] = await Promise.all([
-    getHomePageContent(lang),
+  const [localesData, headerData, footerData] = await Promise.all([
     getAvailableLocales(),
+    getHeaderData(lang),
+    getFooterData(lang),
   ]);
-  const homePageProps: HomePageProps = homePageData.data;
+
+  const headerProps: HeaderData = headerData.data;
+  const footerProps: FooterData = footerData.data;
   const availableLocales: { id: number; name: string; code: string; isDefault: boolean }[] = localesData;
   const defaultLocale = availableLocales.find(l => l.isDefault)?.code || 'es-419';
 
   return (
     <>
       <Header
-        siteTitle={homePageProps.site_title}
-        navHome={homePageProps.header_nav_home}
-        navProjects={homePageProps.header_nav_projects}
+        displayText={headerProps.display_text}
+        navLinks={headerProps.nav_links}
         lang={lang}
         defaultLocale={defaultLocale}
         availableLocales={availableLocales}
@@ -104,12 +118,10 @@ export default async function LangLayout({
       <Footer
         lang={lang}
         defaultLocale={defaultLocale}
-        footerBuiltByPrefix={homePageProps.footer_built_by_prefix}
-        footerAuthorName={homePageProps.footer_author_name}
-        footerBuiltBySuffix={homePageProps.footer_built_by_suffix}
-        socialLinkGithub={homePageProps.social_link_github}
-        socialLinkLinkedin={homePageProps.social_link_linkedin}
-        socialLinkEmail={homePageProps.social_link_email}
+        externalLinks={footerProps.external_links}
+        copyrightPrefix={footerProps.copyright_prefix}
+        copyrightAuthorLink={footerProps.copyright_author_link}
+        copyrightSuffix={footerProps.copyright_suffix}
       />
     </>
   );

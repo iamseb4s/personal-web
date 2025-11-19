@@ -2,19 +2,52 @@ import { Hero } from "@/components/sections/Hero";
 import { Projects } from "@/components/sections/Projects";
 import { Stack } from "@/components/sections/Stack";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import { getHomePageContent, fetchAPI, getAvailableLocales } from "@/lib/strapi";
-import { HomePageProps } from "@/types/home-page"; // Import HomePageProps from shared types
+import { fetchAPI, getAvailableLocales, getHomePageData, getProjectPageData } from "@/lib/strapi";
+import { HomePageData, HomePageSection, ProjectPageData } from "@/types/strapi";
+import { Project as StrapiProject } from "@/types/project"; // Assuming Project type is defined here
 
-interface Locale {
-  code: string;
-  isDefault: boolean;
+interface HomeProps {
+  params: Promise<{ lang: string }>;
 }
 
-export default async function Home({ params }: { params: Promise<{ lang: string }> }) {
-  const { lang } = await params;
+// Helper component to render sections dynamically
+const SectionRenderer = ({
+  section,
+  projectsData,
+  projectPageProps,
+  lang,
+  defaultLocale,
+}: {
+  section: HomePageSection;
+  projectsData: StrapiProject[];
+  projectPageProps: ProjectPageData;
+  lang: string;
+  defaultLocale: string;
+}) => {
+  switch (section.__component) {
+    case "sections.hero":
+      return <Hero lang={lang} defaultLocale={defaultLocale} data={section} />;
+    case "sections.projects-feed":
+      return (
+        <Projects
+          lang={lang}
+          defaultLocale={defaultLocale}
+          data={section}
+          projectsData={projectsData}
+          projectPageProps={projectPageProps}
+        />
+      );
+    case "sections.stack":
+      return <Stack data={section} projectsData={projectsData} />;
+    default:
+      return null;
+  }
+};
 
-  const [homePageData, projectsData, localesData] = await Promise.all([
-    getHomePageContent(lang),
+export default async function Home({ params }: HomeProps) {
+  const { lang } = await params;
+  const [homePageResponse, projectsResponse, localesData, projectPageResponse] = await Promise.all([
+    getHomePageData(lang),
     fetchAPI('/projects', {
       locale: lang,
       populate: {
@@ -23,45 +56,29 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
       },
     }),
     getAvailableLocales(),
+    getProjectPageData(lang),
   ]);
 
-  const homePageProps: HomePageProps = homePageData.data;
-  const defaultLocale = localesData.find((l: Locale) => l.isDefault)?.code || 'es-419';
+  const homePageProps: HomePageData = homePageResponse.data;
+  const projectsData: StrapiProject[] = projectsResponse.data;
+  const projectPageProps: ProjectPageData = projectPageResponse.data;
+  
+  const sections = homePageProps?.sections || [];
+  const defaultLocale = localesData.find((l: {isDefault: boolean}) => l.isDefault)?.code || 'es-419';
 
   return (
     <>
-      <Hero
-        lang={lang}
-        defaultLocale={defaultLocale}
-        heroGreeting={homePageProps.hero_greeting}
-        heroDescription={homePageProps.hero_description}
-        heroButton1={homePageProps.hero_button_1}
-        heroButton2={homePageProps.hero_button_2}
-        heroDayImage={homePageProps.hero_day_image}
-        heroNightImage={homePageProps.hero_night_image}
-        heroTypewriter={homePageProps.hero_typewriter}
-        socialLinkEmail={homePageProps.social_link_email}
-      />
-      <ScrollReveal delay={0.25}>
-        <Stack
-          stackSectionTitle={homePageProps.stack_section_title}
-          projectsData={projectsData}
-        />
-      </ScrollReveal>
-      <ScrollReveal delay={0.25}>
-        <Projects
-          lang={lang}
-          defaultLocale={defaultLocale}
-          projectsSectionTitle={homePageProps.projects_section_title}
-          projectDefaultImage={homePageProps.project_default_image}
-          projectWipText={homePageProps.project_wip_text}
-          projectLiveDemoButtonText={homePageProps.project_live_demo_button_text}
-          projectRepoButtonText={homePageProps.project_repo_button_text}
-          projectLiveDemoButtonTextShort={homePageProps.project_live_demo_button_text_short}
-          projectRepoButtonTextShort={homePageProps.project_repo_button_text_short}
-          projectsData={projectsData}
-        />
-      </ScrollReveal>
+      {sections.map((section: HomePageSection, index: number) => (
+        <ScrollReveal key={index} delay={0.25}>
+          <SectionRenderer
+            section={section}
+            projectsData={projectsData}
+            projectPageProps={projectPageProps}
+            lang={lang}
+            defaultLocale={defaultLocale}
+          />
+        </ScrollReveal>
+      ))}
     </>
   );
 }

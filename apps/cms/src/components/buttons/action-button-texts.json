@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_buttons_action_button_texts",
+  "info": {
+    "displayName": "Action Button Texts"
+  },
+  "options": {},
+  "attributes": {
+    "live_demo_button_text": {
+      "type": "string"
+    },
+    "live_demo_button_text_short": {
+      "type": "string"
+    },
+    "repo_button_text": {
+      "type": "string"
+    },
+    "repo_button_text_short": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}
