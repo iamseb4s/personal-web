@@ -1,0 +1,17 @@
+{
+  "collectionName": "components_link_nav_links",
+  "info": {
+    "displayName": "NavLink",
+    "icon": "hashtag"
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "string"
+    },
+    "target_id": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,14 @@
+{
+  "collectionName": "components_sections_stacks",
+  "info": {
+    "displayName": "Stack",
+    "icon": "apps"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}
