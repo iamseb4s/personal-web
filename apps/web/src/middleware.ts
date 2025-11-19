@@ -10,8 +10,14 @@ async function getLocaleConfig() {
 }
 
 export async function middleware(request: NextRequest) {
-  const { locales, defaultLocale } = await getLocaleConfig();
   const pathname = request.nextUrl.pathname;
+
+  // If the pathname includes a dot, it's likely a static file, so do nothing.
+  if (pathname.includes('.')) {
+    return;
+  }
+
+  const { locales, defaultLocale } = await getLocaleConfig();
 
   // Check if the pathname already has a locale prefix.
   const pathnameHasLocale = locales.some(
