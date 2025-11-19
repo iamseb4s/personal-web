@@ -6,6 +6,11 @@ import { Footer } from '@/components/layout/Footer';
 import { getHomePageContent, getAvailableLocales } from '@/lib/strapi';
 import { HomePageProps } from '@/types/home-page';
 
+interface Locale {
+  code: string;
+  isDefault: boolean;
+}
+
 export const bebasNeue = Bebas_Neue({
   variable: '--font-bebas-neue',
   subsets: ['latin'],
@@ -42,14 +47,29 @@ export async function generateMetadata({
   params: Promise<{ lang: string }>;
 }): Promise<Metadata> {
   const { lang } = await params;
-  const homePageData = await getHomePageContent(lang);
+  const [homePageData, localesData] = await Promise.all([
+    getHomePageContent(lang),
+    getAvailableLocales(),
+  ]);
   const homePageProps: HomePageProps = homePageData.data;
+  const defaultLocale = localesData.find((l: Locale) => l.isDefault)?.code || 'es-419';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:4100';
+
+  const alternates: { [key: string]: string } = {};
+  localesData.forEach((locale: Locale) => {
+    const localePath = locale.isDefault ? '' : `/${locale.code}`;
+    alternates[locale.code] = `${siteUrl}${localePath}`;
+  });
 
   return {
     title: homePageProps.site_metadata_title,
     description: homePageProps.hero_description,
     icons: {
       icon: '/sebas_icon.svg',
+    },
+    alternates: {
+      canonical: `${siteUrl}/${lang === defaultLocale ? '' : lang}`,
+      languages: alternates,
     },
   };
 }

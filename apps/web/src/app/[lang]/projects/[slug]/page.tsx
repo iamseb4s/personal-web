@@ -39,15 +39,33 @@ export async function generateMetadata({
   params: Promise<{ slug: string; lang: string }>;
 }): Promise<Metadata> {
   const { slug, lang } = await params;
-  const project = await getProjectBySlugFromAPI(slug, lang);
+  const [project, localesData] = await Promise.all([
+    getProjectBySlugFromAPI(slug, lang),
+    getAvailableLocales(),
+  ]);
+
   if (!project) {
     return {
       title: 'Project Not Found',
     };
   }
+
+  const defaultLocale = localesData.find((l: Locale) => l.isDefault)?.code || 'es-419';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:4100';
+
+  const alternates: { [key: string]: string } = {};
+  localesData.forEach((locale: Locale) => {
+    const localePath = locale.isDefault ? '' : `/${locale.code}`;
+    alternates[locale.code] = `${siteUrl}${localePath}/projects/${slug}`;
+  });
+
   return {
     title: `${project.title} | iamsebas.dev`,
     description: project.description,
+    alternates: {
+      canonical: `${siteUrl}/${lang === defaultLocale ? '' : lang + '/'}projects/${slug}`,
+      languages: alternates,
+    },
   };
 }
 
