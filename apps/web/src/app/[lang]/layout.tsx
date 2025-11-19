@@ -67,8 +67,8 @@ export default async function LangLayout({
     getAvailableLocales(),
   ]);
   const homePageProps: HomePageProps = homePageData.data;
-  const availableLocales: { id: number; name: string; code: string }[] = localesData;
-
+  const availableLocales: { id: number; name: string; code: string; isDefault: boolean }[] = localesData;
+  const defaultLocale = availableLocales.find(l => l.isDefault)?.code || 'es-419';
 
   return (
     <>
@@ -77,10 +77,13 @@ export default async function LangLayout({
         navHome={homePageProps.header_nav_home}
         navProjects={homePageProps.header_nav_projects}
         lang={lang}
+        defaultLocale={defaultLocale}
         availableLocales={availableLocales}
       />
       <main>{children}</main>
       <Footer
+        lang={lang}
+        defaultLocale={defaultLocale}
         footerBuiltByPrefix={homePageProps.footer_built_by_prefix}
         footerAuthorName={homePageProps.footer_author_name}
         footerBuiltBySuffix={homePageProps.footer_built_by_suffix}

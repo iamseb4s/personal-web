@@ -21,10 +21,11 @@ interface LocaleInfo {
 
 interface LanguageSwitcherProps {
   currentLang: string;
+  defaultLocale: string;
   availableLocales: LocaleInfo[];
 }
 
-export const LanguageSwitcher = ({ currentLang, availableLocales }: LanguageSwitcherProps) => {
+export const LanguageSwitcher = ({ currentLang, defaultLocale, availableLocales }: LanguageSwitcherProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const pathname = usePathname();
   const ref = React.useRef<HTMLDivElement>(null);
@@ -34,11 +35,24 @@ export const LanguageSwitcher = ({ currentLang, availableLocales }: LanguageSwit
   const toggleOpen = () => setIsOpen(!isOpen);
 
   const getLocalizedPath = (targetLangCode: string) => {
-    // pathname will be like /es-419/projects/my-slug or /es-419
-    const pathSegments = pathname.split('/');
-    // Replace the current locale segment with the target locale
-    pathSegments[1] = targetLangCode;
-    return pathSegments.join('/');
+    let path = pathname;
+
+    // If the current language is the default one, the pathname will not have a locale.
+    // e.g. /projects/my-project
+    // If it's not the default, it will be /en/projects/my-project
+    const isCurrentLangDefault = currentLang === defaultLocale;
+
+    if (!isCurrentLangDefault) {
+      // Remove the current locale from the path
+      path = path.substring(`/${currentLang}`.length) || '/';
+    }
+
+    // Prepend the new locale if it's not the default one
+    if (targetLangCode === defaultLocale) {
+      return path;
+    } else {
+      return `/${targetLangCode}${path}`;
+    }
   };
 
   const currentDisplayLang = currentLang === 'es-419' ? 'es' : currentLang.toUpperCase().substring(0,2);

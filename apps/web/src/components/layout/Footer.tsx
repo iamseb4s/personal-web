@@ -3,6 +3,8 @@ import Link from 'next/link';
 import Container from '@/components/ui/Container';
 
 interface FooterProps {
+  lang: string;
+  defaultLocale: string;
   footerBuiltByPrefix: string;
   footerAuthorName: string;
   footerBuiltBySuffix: string;
@@ -12,6 +14,8 @@ interface FooterProps {
 }
 
 export const Footer = ({
+  lang,
+  defaultLocale,
   footerBuiltByPrefix,
   footerAuthorName,
   footerBuiltBySuffix,
@@ -24,6 +28,7 @@ export const Footer = ({
     { name: 'LINKEDIN', url: socialLinkLinkedin },
     { name: 'EMAIL', url: socialLinkEmail },
   ];
+  const homePath = lang === defaultLocale ? '/' : `/${lang}`;
 
   return (
     <footer className="w-full bg-secondary mb-6 md:mb-0">
@@ -34,7 +39,7 @@ export const Footer = ({
       >
         <p className="text-center font-mono text-sm sm:text-md  md:text-lg leading-loose text-secondary-foreground md:text-left">
           {footerBuiltByPrefix}{' '}
-          <Link href="/" className="relative group font-bold">
+          <Link href={homePath} className="relative group font-bold">
             {footerAuthorName}
             <span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-secondary-foreground transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out origin-center"></span>
           </Link>

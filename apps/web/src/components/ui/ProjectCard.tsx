@@ -41,6 +41,7 @@ export type Project = {
 type ProjectCardProps = {
   project: Project;
   lang: string;
+  defaultLocale: string;
   projectWipText: string;
   projectLiveDemoButtonText: string;
   projectRepoButtonText: string;
@@ -51,6 +52,7 @@ type ProjectCardProps = {
 export const ProjectCard = ({
   project,
   lang,
+  defaultLocale,
   projectWipText,
   projectLiveDemoButtonText,
   projectRepoButtonText,
@@ -66,7 +68,10 @@ export const ProjectCard = ({
 
   const handleCardClick = () => {
     if (!isWip) {
-      router.push(`/${lang}/projects/${project.slug}`);
+      const projectUrl = lang === defaultLocale
+        ? `/projects/${project.slug}`
+        : `/${lang}/projects/${project.slug}`;
+      router.push(projectUrl);
     }
   };
 

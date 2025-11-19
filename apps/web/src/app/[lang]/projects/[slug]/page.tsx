@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxComponents } from '@/mdx-components';
 import { ActionButtons } from '@/components/ui/ActionButtons';
-import { getProjectBySlugFromAPI, getStrapiURL, getHomePageContent } from '@/lib/strapi';
+import { getProjectBySlugFromAPI, getStrapiURL, getHomePageContent, getAvailableLocales } from '@/lib/strapi';
 import readingTime from 'reading-time';
 import { HomePageProps } from '@/types/home-page';
 
@@ -26,6 +26,11 @@ interface BodyImageComponent {
   width?: number;
 }
 type DynamicZoneComponent = TextBlockComponent | BodyImageComponent;
+
+interface Locale {
+  code: string;
+  isDefault: boolean;
+}
 
 // Generate metadata for the page
 export async function generateMetadata({
@@ -53,11 +58,17 @@ export default async function ProjectPage({
   params: Promise<{ slug: string; lang: string }>;
 }) {
   const { slug, lang } = await params;
-  const [project, homePageData] = await Promise.all([
+  const [project, homePageData, localesData] = await Promise.all([
     getProjectBySlugFromAPI(slug, lang),
     getHomePageContent(lang),
+    getAvailableLocales(),
   ]);
+
   const homePageProps: HomePageProps = homePageData.data;
+  const defaultLocale = localesData.find((l: Locale) => l.isDefault)?.code || 'es-419';
+
+  const homePath = lang === defaultLocale ? '/' : `/${lang}`;
+  const projectsPath = lang === defaultLocale ? '/#projects' : `/${lang}/#projects`;
 
   if (!project) {
     notFound();
@@ -78,7 +89,7 @@ export default async function ProjectPage({
     return (
       <>
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-8 text-sm text-foreground/70 font-mono">
-          <Link href={`/${lang}`} className="flex items-center gap-2 group">
+          <Link href={homePath} className="flex items-center gap-2 group">
             <Image
               src="/sebas_icon.svg"
               alt={homePageProps.site_logo_alt_text}
@@ -178,7 +189,7 @@ export default async function ProjectPage({
 
         <div className="mt-20 mb-20 text-center">
           <Link
-            href={`/${lang}/#projects`}
+            href={projectsPath}
             className="text-sm md:text-lg font-mono relative group text-foreground transition-colors"
           >
             {homePageProps.project_back_button_text}

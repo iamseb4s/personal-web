@@ -2,29 +2,37 @@ import { Hero } from "@/components/sections/Hero";
 import { Projects } from "@/components/sections/Projects";
 import { Stack } from "@/components/sections/Stack";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import { getHomePageContent, fetchAPI } from "@/lib/strapi";
+import { getHomePageContent, fetchAPI, getAvailableLocales } from "@/lib/strapi";
 import { HomePageProps } from "@/types/home-page"; // Import HomePageProps from shared types
+
+interface Locale {
+  code: string;
+  isDefault: boolean;
+}
 
 export default async function Home({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
-  const homePageData = await getHomePageContent(lang);
-  const homePageProps: HomePageProps = homePageData.data;
 
-  const projectsData = await fetchAPI('/projects', {
-    locale: lang, // Fetch the specific locale
-    populate: {
-      main_image: {
-        fields: ['url'],
+  const [homePageData, projectsData, localesData] = await Promise.all([
+    getHomePageContent(lang),
+    fetchAPI('/projects', {
+      locale: lang,
+      populate: {
+        main_image: { fields: ['url'] },
+        technologies: { fields: ['name'] },
       },
-      technologies: {
-        fields: ['name'],
-      },
-    },
-  });
+    }),
+    getAvailableLocales(),
+  ]);
+
+  const homePageProps: HomePageProps = homePageData.data;
+  const defaultLocale = localesData.find((l: Locale) => l.isDefault)?.code || 'es-419';
 
   return (
     <>
       <Hero
+        lang={lang}
+        defaultLocale={defaultLocale}
         heroGreeting={homePageProps.hero_greeting}
         heroDescription={homePageProps.hero_description}
         heroButton1={homePageProps.hero_button_1}
@@ -43,6 +51,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
       <ScrollReveal delay={0.25}>
         <Projects
           lang={lang}
+          defaultLocale={defaultLocale}
           projectsSectionTitle={homePageProps.projects_section_title}
           projectDefaultImage={homePageProps.project_default_image}
           projectWipText={homePageProps.project_wip_text}
