@@ -13,6 +13,27 @@ jobs:
       COMPOSE_PROJECT_NAME: portfolio-staging
       DB_SOURCE_PATH: ${{ secrets.PROD_DB_PATH }}
     steps:
+      - name: Debug Environment and Permissions
+        continue-on-error: true
+        run: |
+          echo "--- Debugging Information ---"
+          echo " "
+          echo "1. Current User:"
+          whoami
+          echo "---------------------------"
+          echo " "
+          echo "2. Checking DB_SOURCE_PATH variable:"
+          if [ -z "$DB_SOURCE_PATH" ]; then
+            echo "::error::DB_SOURCE_PATH is EMPTY or NOT SET."
+          else
+            echo "✅ DB_SOURCE_PATH is set. Value is redacted."
+            echo "---------------------------"
+            echo " "
+            echo "3. Attempting to list source directory:"
+            ls -la "$(dirname "$DB_SOURCE_PATH")"
+          fi
+          echo "---------------------------"
+      
       - name: Checkout correct tag
         uses: actions/checkout@v4
         with:
@@ -67,6 +88,27 @@ jobs:
       COMPOSE_PROJECT_NAME: portfolio-prod
       DB_SOURCE_PATH: ${{ secrets.PROD_DB_PATH }}
     steps:
+      - name: Debug Environment and Permissions
+        continue-on-error: true
+        run: |
+          echo "--- Debugging Information ---"
+          echo " "
+          echo "1. Current User:"
+          whoami
+          echo "---------------------------"
+          echo " "
+          echo "2. Checking DB_SOURCE_PATH variable:"
+          if [ -z "$DB_SOURCE_PATH" ]; then
+            echo "::error::DB_SOURCE_PATH is EMPTY or NOT SET."
+          else
+            echo "✅ DB_SOURCE_PATH is set. Value is redacted."
+            echo "---------------------------"
+            echo " "
+            echo "3. Attempting to list source directory:"
+            ls -la "$(dirname "$DB_SOURCE_PATH")"
+          fi
+          echo "---------------------------"
+
       - name: Checkout correct tag
         uses: actions/checkout@v4
         with:
@@ -78,7 +120,7 @@ jobs:
       - name: Set up cms environment file
         run: echo "${{ secrets.DOTENV_PRODUCTION_CMS }}" > apps/cms/.env.production
 
-      - name: Seed production database from production
+      - name: Seed production database from source
         run: |
           mkdir -p ${{ github.workspace }}/apps/cms/database
           cp $DB_SOURCE_PATH ${{ github.workspace }}/apps/cms/database/production.sqlite
