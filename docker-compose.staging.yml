@@ -1,13 +1,31 @@
 services:
   staging-web:
-    container_name: web-staging
+    container_name: staging-web
     build:
-      context: .
+      context: ./apps/web
       dockerfile: Dockerfile.prod
     env_file:
-      - .env.staging
+      - ./apps/web/.env.staging
     ports:
       - "4200:4000"
+    depends_on:
+      - staging-cms
     restart: unless-stopped
     environment:
       - NODE_ENV=production
+
+  staging-cms:
+    container_name: staging-cms
+    build:
+      context: ./apps/cms
+      dockerfile: Dockerfile.prod
+    env_file:
+      - ./apps/cms/.env.staging
+    ports:
+      - "4201:1337"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./apps/cms/database:/app/database
+      - ./apps/cms/public/uploads:/app/public/uploads

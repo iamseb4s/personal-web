@@ -1,0 +1,60 @@
+# Stage 1: Builder
+FROM node:20-alpine AS builder
+
+# Create non-root user and group
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Set working directory inside the container
+WORKDIR /app
+RUN chown appuser:appgroup /app
+
+# Switch to the non-root user
+USER appuser
+
+# Copy package files with correct ownership and install all dependencies
+COPY --chown=appuser:appgroup ./package*.json ./
+RUN npm ci
+
+# Copy the rest of your application's source code with correct ownership
+COPY --chown=appuser:appgroup . .
+
+# Run linting and security checks before building
+RUN npm run lint
+RUN npm audit --audit-level=high
+
+# Ensure the public directory exists before building
+RUN mkdir -p /app/public
+# Build the Next.js application for production
+RUN npm run build
+
+# ---
+
+# Stage 2: Runner
+FROM node:20-alpine AS runner
+
+# Create non-root user and group
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Set working directory and change its ownership (while it's empty)
+WORKDIR /app
+RUN chown appuser:appgroup /app
+
+# Switch to the non-root user
+USER appuser
+
+# Copy package files with correct ownership and install ONLY production dependencies
+COPY --chown=appuser:appgroup ./package*.json ./
+RUN npm ci --omit=dev
+
+# Copy essential built assets from the 'builder' stage with correct ownership
+COPY --from=builder --chown=appuser:appgroup /app/.next ./.next
+COPY --from=builder --chown=appuser:appgroup /app/public ./public
+COPY --from=builder --chown=appuser:appgroup /app/next.config.ts ./next.config.ts
+
+# Environment variables
+ENV PORT=4000
+# Expose the port the app will run on
+EXPOSE 4000
+
+# The command to start the production server on the specified port
+CMD ["npm", "start"]

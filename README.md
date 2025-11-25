@@ -1,108 +1,112 @@
-# Personal Portfolio - A Showcase of Modern Web Engineering
+# Personal Portfolio - A Headless Monorepo Showcase
 
-[![Next.js](https://img.shields.io/badge/Next.js-15.5-black?logo=next.js)](https://nextjs.org/) [![React](https://img.shields.io/badge/React-19.1-blue?logo=react)](https://react.dev/) [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/) [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1-cyan?logo=tailwind-css)](https://tailwindcss.com/)
+[![Next.js](https://img.shields.io/badge/Next.js-15.5-black?logo=next.js)](https://nextjs.org/) [![Strapi](https://img.shields.io/badge/Strapi-5.31-8F75FF?logo=strapi)](https://strapi.io/) [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/) [![Docker](https://img.shields.io/badge/Docker-gray?logo=docker)](https://www.docker.com/)
 
 ### 🌐 [View Live Demo](https://iamsebas.dev)
 
-This repository contains the source code for my personal portfolio, meticulously crafted not just as a gallery of my work, but as a testament to modern, high-standard web development practices. The project emphasizes performance, developer experience (DX), and architectural robustness, built on a foundation of the latest industry-standard technologies.
+This repository contains the source code for my personal portfolio, meticulously crafted not just as a gallery of my work, but as a testament to modern, high-standard web development practices. The project emphasizes performance, developer experience (DX), and architectural robustness, built on a foundation of the latest industry-standard technologies. It has been architected as a **headless monorepo** to showcase a clear separation of concerns between the frontend presentation layer and the backend content management system.
 
-## Core Philosophy
+## ✨ Key Features
 
-- **Bleeding-Edge Technology:** Leverages the latest stable versions of Next.js (v15.5), React (v19), and Tailwind CSS (v4) to build a future-proof and performant application.
-- **Architectural Integrity:** Prioritizes a clean, scalable, and maintainable architecture with a clear separation of concerns.
-- **Developer Experience (DX):** A fully containerized development environment with Docker ensures a consistent and hassle-free setup. Strict linting, formatting, and TypeScript configurations are enforced to maintain code quality.
-- **Performance First:** Optimized for speed through modern frameworks, a multi-stage production build, and efficient content pipelines.
+- **Headless Architecture:** Decoupled Next.js frontend and Strapi CMS backend for independent development and scaling.
+- **Monorepo Structure:** Simplifies dependency management and ensures consistency across the `web` and `cms` applications.
+- **Developer Experience (DX):** A fully containerized multi-service environment using Docker Compose ensures a consistent and hassle-free setup.
+- **Performance & Scalability:** Optimized Next.js frontend, powerful Strapi API, and multi-stage Docker builds create a lean and efficient application.
+- **Robust CI/CD Pipeline:** Automated quality checks on every pull request and release-based deployments to production ensure stability and predictability.
 
-## 🏛️ Architectural Deep Dive
+## 🏛️ System Architecture
 
-This project is more than a simple website; it's a collection of deliberate engineering decisions.
+This project is a collection of deliberate engineering decisions to build a scalable and maintainable web application.
 
-### 1. Containerization Strategy (Docker)
+### 1. Monorepo & Services
 
-The entire development and production lifecycle is containerized, providing consistency and eliminating "it works on my machine" issues.
+The project is organized as a monorepo containing two primary applications under the `/apps` directory:
 
-- **Development (`Dockerfile.dev`):** A dedicated development environment with hot-reloading enabled through volume mounts, ensuring a fast and efficient feedback loop.
-- **Production (`Dockerfile.prod`):** A multi-stage Docker build is used to create a lean, secure, and optimized production image. This process involves:
-    1. A `builder` stage to install all dependencies and build the application.
-    2. A `runner` stage that copies only the essential build artifacts (`.next`, `public`, `package.json`) and installs *only* production dependencies using `npm ci --omit=dev`. This dramatically reduces the final image size and attack surface.
+- **`/apps/web`:** A modern Next.js application responsible for the presentation layer (UI).
+- **`/apps/cms`:** A powerful Strapi v5 application that serves as the headless Content Management System.
 
-### 2. Content Pipeline (MDX)
+This structure simplifies dependency management and ensures consistency across services.
 
-Project and blog content is managed through a decoupled and efficient MDX-based pipeline.
+### 2. Content & Data Flow
 
-- **Source:** Content is written in `.mdx` files with YAML frontmatter for metadata.
-- **Data Layer (`/lib`):** A dedicated data-fetching layer reads the MDX files from the filesystem. It uses `gray-matter` to parse the frontmatter and separate it from the main content.
-- **Rendering:** On the page, `next-mdx-remote` is used to render the MDX content string. This approach is highly performant as it avoids server-side compilation of components, sending only the necessary data to the client.
+The architecture is fully headless. All content, including UI text, project details, and media, is managed through the Strapi CMS and consumed by the Next.js frontend via a REST API. This decouples the content from the code, allowing for content updates without requiring a frontend deployment. Data fetching is centralized in the Next.js app and performed server-side at runtime.
 
-### 3. Styling System
+### 3. Internationalization (i18n)
 
-The styling is built on a modern, utility-first foundation that is both powerful and maintainable.
+The application features a robust internationalization strategy. A custom middleware (`/apps/web/src/middleware.ts`) intercepts incoming requests, dynamically fetches available locales from the Strapi API, and intelligently serves the default language from the root path (`/`) while using standard prefixes for all other languages (e.g., `/en`). This architecture is fully optimized for international SEO, with dynamically generated `hreflang` tags to ensure correct language targeting in search engines.
 
-- **Tailwind CSS v4.1:** Utilizes the latest version, operating without an explicit `tailwind.config.ts` file and leveraging its new engine for improved performance.
-- **CSS Variable-Based Theming:** Light and Dark modes are implemented in `globals.css` using CSS variables. This allows for dynamic, real-time theme switching without page reloads and is fully compatible with Tailwind's `theme()` function.
+### 4. Containerization
 
-### 4. Code Quality & Type Safety
+The entire lifecycle is containerized using Docker and Docker Compose, orchestrating the multi-service environment.
 
-- **TypeScript Strict Mode:** The project enforces TypeScript's `strict: true` mode, ensuring maximum type safety and reducing runtime errors.
-- **ESLint:** A strict ESLint configuration (`eslint: 9`) is in place to maintain a consistent and high-quality codebase.
+- **Development (`docker-compose.dev.yml`):** Starts both services with hot-reloading for a fast feedback loop.
+- **Staging & Production (`docker-compose.staging.yml`, `docker-compose.prod.yml`):** Use multi-stage builds to create lean, secure, and optimized production images, with bind mounts for data persistence.
 
 ## 🛠️ Technology Stack
 
-| Category          | Technology                                                              |
-| ----------------- | ----------------------------------------------------------------------- |
-| **Framework**     | [Next.js](https://nextjs.org/) (v15.5.2)                                |
-| **UI Library**    | [React](https://react.dev/) (v19.1.0)                                   |
-| **Language**      | [TypeScript](https://www.typescriptlang.org/) (v5)                      |
-| **Styling**       | [Tailwind CSS](https://tailwindcss.com/) (v4.1)                         |
-| **Animations**    | [Framer Motion](https://www.framer.com/motion/)                         |
-| **Theming**       | [next-themes](https://github.com/pacocoursey/next-themes)               |
-| **Content**       | [MDX](https://mdxjs.com/) with `next-mdx-remote` & `gray-matter`        |
-| **Containerization**| [Docker](https://www.docker.com/) & Docker Compose                    |
-| **Linting**       | [ESLint](https://eslint.org/) (v9)                                      |
+| Category              | Technology                                                              |
+| --------------------- | ----------------------------------------------------------------------- |
+| **Frontend (Web)**    | [Next.js](https://nextjs.org/) (v15.5), [React](https://react.dev/) (v19) |
+| **Backend (CMS)**     | [Strapi](https://strapi.io/) (v5.31)                                    |
+| **Language**          | [TypeScript](https://www.typescriptlang.org/) (v5)                      |
+| **Styling**           | [Tailwind CSS](https://tailwindcss.com/) (v4)                           |
+| **Containerization**  | [Docker](https://www.docker.com/) & Docker Compose                    |
+| **Linting**           | [ESLint](https://eslint.org/) (v9)                                      |
 
 ## 📂 Project Structure
 
-The project follows a feature-oriented structure with a clear separation of concerns.
-
 ```
 ./
-├── app/                        # Main Next.js project folder
-│   ├── public/                 # Static assets (images, fonts)
-│   ├── src/
-│   │   ├── app/                # Next.js App Router: routes and pages
-│   │   ├── components/         # Reusable React components (UI, layout, sections)
-│   │   ├── content/            # MDX content files for projects
-│   │   └── lib/                # Core logic, data fetching, site metadata
-│   ├── next.config.ts          # Next.js configuration
-│   ├── package.json            # Project dependencies and scripts
-│   └── tsconfig.json           # TypeScript configuration
+├── apps/
+│   ├── cms/                  # Strapi Headless CMS application
+│   └── web/                  # Next.js Frontend application
+│       ├── public/             # Static assets (images, fonts)
+│       ├── src/
+│       │   ├── app/
+│       │   │   └── [lang]/     # Next.js App Router: Dynamic, localized routes
+│       │   ├── components/     # Reusable React components
+│       │   ├── hooks/          # Custom React hooks
+│       │   ├── lib/            # Core logic, data fetching
+│       │   └── types/          # Shared TypeScript types
+│       ├── middleware.ts       # I18n routing middleware
+│       ├── next.config.ts      # Next.js configuration
+│       └── ...
+├── backup.sh                   # Script to backup Strapi databases
 ├── docker-compose.dev.yml      # Development environment configuration
-├── Dockerfile.dev              # Dockerfile for development
 ├── docker-compose.staging.yml  # Staging environment configuration
 ├── docker-compose.prod.yml     # Production environment configuration
-└── Dockerfile.prod             # Multi-stage Dockerfile for production
+└── README.md
 ```
 
 ## 🚀 Setup Guide
 
-This is a quick reference for setting up the local development environment.
+This guide explains how to set up the local multi-service development environment.
 
-  1. **Clone the repository:**
+1. **Clone the repository:**
 
-  ```sh
-  git clone https://github.com/iamseb4s/personal-web.git
-  cd personal-web
-  ```
+    ```sh
+    git clone https://github.com/iamseb4s/personal-web.git
+    cd personal-web
+    ```
 
-  2. **Build and run the development container:**
-    This command builds the Docker image and starts the `dev-web` service in the background.
+2. **Configure Environment Variables:**
+    Copy the `.env.example` files for both applications and fill in the required values.
 
-  ```sh
-  docker compose -f docker-compose.dev.yml up --build -d
-  ```
+    ```sh
+    cp apps/web/.env.example apps/web/.env.development
+    cp apps/cms/.env.example apps/cms/.env.development
+    ```
 
-  3. **Access the application:**
-    The portfolio is now running in development mode and is accessible at [http://localhost:4100](http://localhost:4100).
+3. **Build and run the development containers:**
+    This command builds the Docker images and starts the `dev-web` and `dev-cms` services.
+
+    ```sh
+    docker compose -f docker-compose.dev.yml up --build -d
+    ```
+
+4. **Access the applications:**
+    - **Web App:** [http://localhost:4100](http://localhost:4100)
+    - **Strapi Admin:** [http://localhost:4101/admin](http://localhost:4101/admin)
 
 ## 🚢 CI/CD & Release Strategy
 
@@ -110,14 +114,12 @@ This project employs a robust CI/CD strategy to ensure code quality, stability, 
 
 ### Key Features
 
-- **PR Quality Gate:** Every pull request to the `main` branch automatically triggers a workflow that performs linting, type-checking, building, and security audits. Merging is blocked until all checks pass, ensuring the `main` branch is always in a deployable state.
-
+- **PR Quality Gate:** Every pull request to the `main` branch automatically triggers a workflow that performs linting, type-checking, building, and security audits for both applications.
 - **Multi-Environment Workflow:** The project utilizes three distinct environments, each with a specific purpose:
   - **Development:** A local, containerized environment for feature development with hot-reloading.
   - **Staging:** A production-like environment for verifying release candidates before the final deployment. It uses the production build to ensure an accurate test.
   - **Production:** The live user-facing environment, deployed automatically from tagged releases on the `main` branch.
-
-- **Release-Based Deployments:** Production deployments are automated and triggered exclusively by the creation of a new GitHub Release on a tagged commit. This provides a clear, auditable history of what version is deployed and when.
+- **Release-Based Deployments:** Production deployments are automated and triggered exclusively by the creation of a new GitHub Release on a tagged commit.
 
 <details>
 <summary><strong>View Step-by-Step Release Checklist</strong></summary>
@@ -128,13 +130,12 @@ This project employs a robust CI/CD strategy to ensure code quality, stability, 
 4. On GitHub, publish a **pre-release** using the new RC tag.
 5. Verify in staging environment:
 
-  ```sh
-  git switch --detach v1.1.0-rc.1
-  docker compose -f docker-compose.staging.yml up -d --build
-  ```
+    ```sh
+    git switch --detach v1.1.0-rc.1
+    docker compose -f docker-compose.staging.yml up -d --build
+    ```
 
-- Check on `http://localhost:4200`.
-
+    - Check on `http://localhost:4200`.
 6. Once verified, create and push the final tag from `main` (e.g., `git tag v1.1.0` && `git push --tags`).
 7. On GitHub, publish a new **full release** (ensure "pre-release" is unchecked) to trigger the production deployment.
 

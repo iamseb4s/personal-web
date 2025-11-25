@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_sections_projects_feeds",
+  "info": {
+    "displayName": "Projects Feed",
+    "icon": "apps"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "wip_text": {
+      "type": "string"
+    },
+    "project_default_image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
+    }
+  },
+  "config": {}
+}

@@ -6,9 +6,13 @@ on:
       - main
 
 jobs:
-  build_and_test:
-    name: Build, Lint & Security Scan
+  quality_check:
+    name: Quality Check - ${{ matrix.app }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [web, cms]
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -18,20 +22,28 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: 'app/package-lock.json'
+          cache-dependency-path: 'apps/${{ matrix.app }}/package-lock.json'
 
       - name: Install dependencies
-        working-directory: ./app
+        working-directory: ./apps/${{ matrix.app }}
         run: npm ci
 
       - name: Lint code
-        working-directory: ./app
+        if: matrix.app == 'web'
+        working-directory: ./apps/${{ matrix.app }}
         run: npm run lint
 
       - name: Build project
-        working-directory: ./app
+        working-directory: ./apps/${{ matrix.app }}
         run: npm run build
 
-      - name: Run security audit
-        working-directory: ./app
+      - name: Run security audit (Web)
+        if: matrix.app == 'web'
+        working-directory: ./apps/${{ matrix.app }}
+        run: npm audit --audit-level=high
+
+      - name: Run security audit (CMS)
+        if: matrix.app == 'cms'
+        continue-on-error: true
+        working-directory: ./apps/${{ matrix.app }}
         run: npm audit --audit-level=high

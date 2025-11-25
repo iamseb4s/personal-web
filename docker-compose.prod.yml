@@ -1,13 +1,31 @@
 services:
   prod-web:
-    container_name: web-prod
+    container_name: prod-web
     build:
-      context: .
+      context: ./apps/web
       dockerfile: Dockerfile.prod
     env_file:
-      - .env.production
+      - ./apps/web/.env.production
     ports:
       - "4000:4000"
+    depends_on:
+      - prod-cms
     restart: unless-stopped
     environment:
       - NODE_ENV=production
+
+  prod-cms:
+    container_name: prod-cms
+    build:
+      context: ./apps/cms
+      dockerfile: Dockerfile.prod
+    env_file:
+      - ./apps/cms/.env.production
+    ports:
+      - "4001:1337"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./apps/cms/database:/app/database
+      - ./apps/cms/public/uploads:/app/public/uploads
