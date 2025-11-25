@@ -42,6 +42,18 @@ import {
   SiGooglegemini,
   SiGithubcopilot,
   SiClaude,
+  SiApacheairflow,
+  SiDbt,
+  SiSnowflake,
+  SiDatabricks,
+  SiGooglebigquery,
+  SiAmazonredshift,
+  SiApachekafka,
+  SiApacheflink,
+  SiTableau,
+  SiLangchain,
+  SiSupabase,
+  SiSqlite,
 } from 'react-icons/si';
 import { VscVscode } from "react-icons/vsc";
 import { FaAws } from "react-icons/fa";
@@ -100,6 +112,18 @@ const TechIcon = ({ name, className }: TechIconProps) => {
     gemini: <SiGooglegemini className={className} />,
     copilot: <SiGithubcopilot className={className} />,
     claude: <SiClaude className={className} />,
+    airflow: <SiApacheairflow className={className} />,
+    dbt: <SiDbt className={className} />,
+    snowflake: <SiSnowflake className={className} />,
+    databricks: <SiDatabricks className={className} />,
+    bigquery: <SiGooglebigquery className={className} />,
+    redshift: <SiAmazonredshift className={className} />,
+    kafka: <SiApachekafka className={className} />,
+    flink: <SiApacheflink className={className} />,
+    tableau: <SiTableau className={className} />,
+    langchain: <SiLangchain className={className} />,
+    supabase: <SiSupabase className={className} />,
+    sqlite: <SiSqlite className={className} />,
   };
 
   const component = components[name.toLowerCase()];
