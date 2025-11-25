@@ -2,51 +2,14 @@ import React from 'react';
 import { ProjectCard, type Project } from '@/components/ui/ProjectCard';
 import Container from '@/components/ui/Container';
 import { getStrapiURL } from '@/lib/strapi';
-
-type StrapiTechnology = {
-  id: number;
-  name: string;
-};
-
-type StrapiProject = {
-  id: number;
-  title: string;
-  slug: string;
-  description: string | null;
-  technologies: StrapiTechnology[];
-  finished: boolean;
-  created: string;
-  repo_url?: string;
-  live_demo?: string | null;
-  main_image: {
-    url: string;
-  } | null;
-};
-
-interface ImageProps {
-  url: string;
-}
-
-interface ProjectsFeedData {
-  title: string;
-  wip_text: string;
-  project_default_image: ImageProps;
-}
-
-interface ProjectPageProps {
-  action_button_texts: {
-    live_demo_button_text: string;
-    repo_button_text: string;
-    live_demo_button_text_short: string;
-    repo_button_text_short: string;
-  }
-}
+import { Project as StrapiProject } from '@/types/project';
+import { ProjectPageData, ProjectsFeedSection } from '@/types/strapi';
 
 interface ProjectsProps {
   lang: string;
   defaultLocale: string;
-  data: ProjectsFeedData;
-  projectPageProps: ProjectPageProps;
+  data: ProjectsFeedSection;
+  projectPageProps: ProjectPageData;
   projectsData: StrapiProject[];
 }
 

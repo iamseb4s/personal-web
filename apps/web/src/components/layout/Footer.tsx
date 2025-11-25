@@ -1,25 +1,14 @@
 import React from 'react';
 import Link from 'next/link';
 import Container from '@/components/ui/Container';
-
-interface NavLink {
-  id: number;
-  text: string;
-  target_id: string;
-}
-
-interface ExternalLink {
-  id: number;
-  text: string;
-  url: string;
-}
+import { NavLink, ExternalLinkComponent } from '@/types/strapi';
 
 interface FooterProps {
   lang: string;
   defaultLocale: string;
-  externalLinks: ExternalLink[];
+  externalLinks: ExternalLinkComponent[];
   copyrightPrefix: string;
-  copyrightAuthorLink: NavLink;
+  copyrightAuthorLink: NavLink | null;
   copyrightSuffix: string;
 }
 
@@ -41,7 +30,7 @@ export const Footer = ({
   copyrightAuthorLink,
   copyrightSuffix,
 }: FooterProps) => {
-  const authorPath = getUrlFromTarget(copyrightAuthorLink.target_id, lang, defaultLocale);
+  const authorPath = copyrightAuthorLink ? getUrlFromTarget(copyrightAuthorLink.target_id, lang, defaultLocale) : '';
 
   return (
     <footer className="w-full bg-secondary mb-6 md:mb-0">
@@ -52,10 +41,12 @@ export const Footer = ({
       >
         <p className="text-center font-mono text-sm sm:text-md  md:text-lg leading-loose text-secondary-foreground md:text-left">
           {copyrightPrefix}{' '}
-          <Link href={authorPath} className="relative group font-bold">
-            {copyrightAuthorLink.text}
-            <span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-secondary-foreground transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out origin-center"></span>
-          </Link>
+          {copyrightAuthorLink && (
+            <Link href={authorPath} className="relative group font-bold">
+              {copyrightAuthorLink.text}
+              <span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-secondary-foreground transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out origin-center"></span>
+            </Link>
+          )}
           {copyrightSuffix}
         </p>
         <div className="flex items-center">

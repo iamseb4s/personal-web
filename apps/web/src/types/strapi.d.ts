@@ -15,7 +15,7 @@ export interface SEOComponent {
   page_description: string;
 }
 
-export interface NavLinkComponent {
+export interface NavLink {
   id: number;
   text: string;
   target_id: string;
@@ -36,6 +36,8 @@ export interface ActionButtonTextsComponent {
 }
 
 export interface Locale {
+  id: number;
+  name: string;
   code: string;
   isDefault: boolean;
 }
@@ -48,8 +50,8 @@ export interface GlobalData {
   updatedAt: string;
   publishedAt: string;
   locale: string;
-  site_logo: StrapiMedia;
-  default_seo: SEOComponent;
+  site_logo: StrapiMedia | null;
+  default_seo: SEOComponent | null;
 }
 
 export interface HeaderData {
@@ -59,7 +61,7 @@ export interface HeaderData {
   updatedAt: string;
   publishedAt: string;
   locale: string;
-  nav_links: NavLinkComponent[];
+  nav_links: NavLink[];
 }
 
 export interface FooterData {
@@ -71,7 +73,7 @@ export interface FooterData {
   publishedAt: string;
   locale: string;
   external_links: ExternalLinkComponent[];
-  copyright_author_link: NavLinkComponent;
+  copyright_author_link: NavLink | null;
 }
 
 export interface ProjectPageData {
@@ -83,8 +85,21 @@ export interface ProjectPageData {
   updatedAt: string;
   publishedAt: string;
   locale: string;
-  author_avatar: StrapiMedia;
-  action_button_texts: ActionButtonTextsComponent;
+  author_avatar: StrapiMedia | null;
+  action_button_texts: ActionButtonTextsComponent | null;
+}
+
+export interface NotFoundPageData {
+  id: number;
+  title: string;
+  message: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  locale: string;
+  seo: SEOComponent | null;
+  link_button: NavLink | null;
 }
 
 // C. Dynamic Zone Section Interfaces
@@ -94,10 +109,10 @@ export interface HeroSection {
   greeting: string;
   description: string;
   typewriter_text: string;
-  day_image: StrapiMedia;
-  night_image: StrapiMedia;
-  internal_link_button: NavLinkComponent;
-  external_link_button: ExternalLinkComponent;
+  day_image: StrapiMedia | null;
+  night_image: StrapiMedia | null;
+  internal_link_button: NavLink | null;
+  external_link_button: ExternalLinkComponent | null;
 }
 
 export interface ProjectsFeedSection {
@@ -105,7 +120,7 @@ export interface ProjectsFeedSection {
   __component: 'sections.projects-feed';
   title: string;
   wip_text: string;
-  project_default_image: StrapiMedia;
+  project_default_image: StrapiMedia | null;
 }
 
 export interface StackSection {
@@ -122,6 +137,6 @@ export interface HomePageData {
   updatedAt: string;
   publishedAt: string;
   locale: string;
-  seo: SEOComponent;
+  seo: SEOComponent | null;
   sections: HomePageSection[];
 }

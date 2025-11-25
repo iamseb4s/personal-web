@@ -175,25 +175,31 @@ export async function getHomePageData(locale: string) {
   const query = qs.stringify({
     populate: {
       seo: {
-        populate: '*',
+        fields: ['page_title', 'page_description'],
       },
       sections: {
         on: {
           'sections.hero': {
+            fields: ['greeting', 'description', 'typewriter_text'],
             populate: {
-              internal_link_button: true,
-              external_link_button: true,
+              internal_link_button: {
+                fields: ['text', 'target_id'],
+              },
+              external_link_button: {
+                fields: ['text', 'url'],
+              },
               day_image: { fields: ['url', 'alternativeText'] },
               night_image: { fields: ['url', 'alternativeText'] },
             }
           },
           'sections.projects-feed': {
+            fields: ['title', 'wip_text'],
             populate: {
-              project_default_image: { fields: ['url'] }
+              project_default_image: { fields: ['url', 'alternativeText', 'width', 'height'] },
             }
           },
           'sections.stack': {
-            populate: '*'
+            fields: ['title'],
           },
         },
       },
@@ -202,5 +208,22 @@ export async function getHomePageData(locale: string) {
   });
 
   const data = await fetchAPI(`/home-page?${query}`);
+  return data;
+}
+
+export async function getNotFoundPageData(locale: string) {
+  const query = qs.stringify({
+    populate: {
+      seo: {
+        fields: ['page_title', 'page_description'],
+      },
+      link_button: {
+        fields: ['text', 'target_id'],
+      },
+    },
+    locale,
+  });
+
+  const data = await fetchAPI(`/not-found-page?${query}`);
   return data;
 }

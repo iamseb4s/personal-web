@@ -5,9 +5,9 @@ import Image from 'next/image';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxComponents } from '@/mdx-components';
 import { ActionButtons } from '@/components/ui/ActionButtons';
-import { getProjectBySlugFromAPI, getStrapiURL, getAvailableLocales, getProjectPageData, getGlobalData } from '@/lib/strapi';
+import { getProjectBySlugFromAPI, getStrapiURL, getAvailableLocales, getProjectPageData, getGlobalData, getNotFoundPageData } from '@/lib/strapi';
 import readingTime from 'reading-time';
-import { GlobalData, ProjectPageData } from '@/types/strapi';
+import { GlobalData, ProjectPageData, Locale, NotFoundPageData } from '@/types/strapi';
 
 // Define types for Strapi data (can be moved to a separate file if reused)
 interface TextBlockComponent {
@@ -27,11 +27,6 @@ interface BodyImageComponent {
 }
 type DynamicZoneComponent = TextBlockComponent | BodyImageComponent;
 
-interface Locale {
-  code: string;
-  isDefault: boolean;
-}
-
 interface PageProps {
   params: Promise<{ slug: string; lang: string }>;
 }
@@ -45,23 +40,39 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     getGlobalData(lang),
   ]);
 
+  const globalProps: GlobalData = globalData.data;
+  const siteLogoUrl = globalProps.site_logo?.url;
+
   if (!project) {
-    return {
-      title: 'Project Not Found',
+    const notFoundPageData = await getNotFoundPageData(lang);
+    const notFoundPageProps: NotFoundPageData = notFoundPageData.data;
+    const pageTitle = notFoundPageProps.seo?.page_title;
+    const pageDescription = notFoundPageProps.seo?.page_description;
+    
+    const metadata: Metadata = {
+      title: `${pageTitle} | ${globalProps.site_brand_name}`,
+      description: pageDescription,
     };
+
+    if (siteLogoUrl) {
+      metadata.icons = {
+        icon: getStrapiURL(siteLogoUrl),
+      };
+    }
+
+    return metadata;
   }
 
-  const globalProps: GlobalData = globalData.data;
-  const defaultLocale = localesData.find((l: Locale) => l.isDefault)?.code || 'es-419';
+  const defaultLocale = (localesData as Locale[]).find((l: Locale) => l.isDefault)?.code || 'es-419';
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:4100';
 
   const alternates: { [key: string]: string } = {};
-  localesData.forEach((locale: Locale) => {
+  (localesData as Locale[]).forEach((locale: Locale) => {
     const localePath = locale.isDefault ? '' : `/${locale.code}`;
     alternates[locale.code] = `${siteUrl}${localePath}/projects/${slug}`;
   });
 
-  return {
+  const metadata: Metadata = {
     title: `${project.title} | ${globalProps.site_brand_name}`,
     description: project.description,
     alternates: {
@@ -69,6 +80,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       languages: alternates,
     },
   };
+
+  if (siteLogoUrl) {
+    metadata.icons = {
+      icon: getStrapiURL(siteLogoUrl),
+    };
+  }
+
+  return metadata;
 }
 
 // The main page component
@@ -85,7 +104,7 @@ export default async function ProjectPage({ params }: PageProps) {
   }
 
   const projectPageProps: ProjectPageData = projectPageData.data;
-  const defaultLocale = localesData.find((l: Locale) => l.isDefault)?.code || 'es-419';
+  const defaultLocale = (localesData as Locale[]).find((l: Locale) => l.isDefault)?.code || 'es-419';
 
   const homePath = lang === defaultLocale ? '/' : `/${lang}`;
   const projectsPath = lang === defaultLocale ? '/#projects' : `/${lang}/#projects`;

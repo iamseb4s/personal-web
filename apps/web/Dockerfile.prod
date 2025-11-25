@@ -22,6 +22,8 @@ COPY --chown=appuser:appgroup . .
 RUN npm run lint
 RUN npm audit --audit-level=high
 
+# Ensure the public directory exists before building
+RUN mkdir -p /app/public
 # Build the Next.js application for production
 RUN npm run build
 
