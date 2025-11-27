@@ -1,6 +1,6 @@
 services:
   staging-web:
-    container_name: staging-web
+    container_name: ${WEB_CONTAINER_NAME:-staging-web}
     build:
       context: ./apps/web
       dockerfile: Dockerfile.prod
@@ -15,7 +15,7 @@ services:
       - NODE_ENV=production
 
   staging-cms:
-    container_name: staging-cms
+    container_name: ${CMS_CONTAINER_NAME:-staging-cms}
     build:
       context: ./apps/cms
       dockerfile: Dockerfile.prod
@@ -27,5 +27,5 @@ services:
     environment:
       - NODE_ENV=production
     volumes:
-      - ./apps/cms/database:/app/database
-      - ./apps/cms/public/uploads:/app/public/uploads
+      - ${PROD_DB_HOST_PATH:-./apps/cms/database}:/app/database
+      - ${PROD_UPLOADS_HOST_PATH:-./apps/cms/public/uploads}:/app/public/uploads
