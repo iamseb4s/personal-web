@@ -32,7 +32,7 @@ jobs:
         env:
           PROD_DB_HOST_PATH: ${{ secrets.PROD_DB_HOST_PATH }}
           PROD_UPLOADS_HOST_PATH: ${{ secrets.PROD_UPLOADS_HOST_PATH }}
-        run: docker compose -f docker-compose.staging.yml up -d --build
+        run: docker compose --env-file apps/web/.env.staging -f docker-compose.staging.yml up -d --build
 
       - name: Health Check
         run: |
@@ -87,7 +87,7 @@ jobs:
         env:
           PROD_DB_HOST_PATH: ${{ secrets.PROD_DB_HOST_PATH }}
           PROD_UPLOADS_HOST_PATH: ${{ secrets.PROD_UPLOADS_HOST_PATH }}
-        run: docker compose -f docker-compose.prod.yml up -d --build
+        run: docker compose --env-file apps/web/.env.production -f docker-compose.prod.yml up -d --build
 
       - name: Health Check
         run: |
