@@ -5,6 +5,8 @@ import { HeroSubtitle } from '@/components/ui/HeroSubtitle';
 import Container from '@/components/ui/Container';
 import { getStrapiURL } from '@/lib/strapi';
 import { HeroSection as HeroSectionData } from '@/types/strapi';
+import { TrackedExternalLink } from '@/components/ui/TrackedExternalLink';
+import { TrackedInternalLink } from '@/components/ui/TrackedInternalLink';
 
 interface HeroProps {
   lang: string;
@@ -44,22 +46,26 @@ export const Hero = ({ lang, defaultLocale, data }: HeroProps) => {
           </p>
           <div className="flex items-center justify-center lg:justify-start gap-4">
             {data.internal_link_button && (
-              <Link
+              <TrackedInternalLink
                 href={internalLinkUrl}
+                location="hero"
+                target={data.internal_link_button.target_id}
+                label={data.internal_link_button.text}
                 className="inline-flex h-10 xl:h-12 items-center justify-center rounded-full bg-secondary dark:bg-primary px-6 md:px-8 text-md xl:text-xl font-mono text-secondary-foreground dark:text-primary-foreground shadow transition-colors hover:bg-secondary/90 hover:dark:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50"
               >
                 {data.internal_link_button.text}
-              </Link>
+              </TrackedInternalLink>
             )}
             {data.external_link_button && (
-              <a
+              <TrackedExternalLink
                 href={data.external_link_button.url}
-                target="_blank"
-                rel="noopener noreferrer"
+                label={data.external_link_button.text}
+                location="hero"
+                targetType="external_link"
                 className="inline-flex h-10 xl:h-12 items-center justify-center rounded-full border border-foreground bg-transparent px-6 md:px-8 text-md xl:text-xl font-mono text-foreground shadow transition-colors hover:bg-foreground/10 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50"
               >
                 {data.external_link_button.text}
-              </a>
+              </TrackedExternalLink>
             )}
           </div>
         </div>

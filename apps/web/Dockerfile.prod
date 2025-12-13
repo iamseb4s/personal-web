@@ -18,6 +18,14 @@ RUN npm ci
 # Copy the rest of your application's source code with correct ownership
 COPY --chown=appuser:appgroup . .
 
+# Pass build arguments for Umami analytics
+ARG NEXT_PUBLIC_UMAMI_WEBSITE_ID
+ARG NEXT_PUBLIC_UMAMI_SCRIPT_URL
+
+# Set environment variables for Next.js build
+ENV NEXT_PUBLIC_UMAMI_WEBSITE_ID=${NEXT_PUBLIC_UMAMI_WEBSITE_ID}
+ENV NEXT_PUBLIC_UMAMI_SCRIPT_URL=${NEXT_PUBLIC_UMAMI_SCRIPT_URL}
+
 # Run linting and security checks before building
 RUN npm run lint
 RUN npm audit --audit-level=high
