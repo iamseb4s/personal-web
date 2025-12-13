@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import React from 'react';
+import { trackEvent } from '@/lib/umami';
 
 // Icon for Live Demo
 const GlobeIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -29,6 +30,7 @@ type ActionButtonsProps = {
   repoText?: string;
   liveDemoTextShort?: string;
   repoTextShort?: string;
+  trackingLocation?: 'project_card' | 'project_page';
 };
 
 export const ActionButtons = ({
@@ -41,11 +43,21 @@ export const ActionButtons = ({
   repoText,
   liveDemoTextShort,
   repoTextShort,
+  trackingLocation = 'project_card',
 }: ActionButtonsProps) => {
   // If neither URL is provided, render nothing.
   if (!liveDemoUrl && !repoUrl) {
     return null;
   }
+
+  const handleActionClick = (e: React.MouseEvent, type: 'live_demo' | 'repo', url: string) => {
+    e.stopPropagation();
+    trackEvent('project_action', {
+      type,
+      location: trackingLocation,
+      url,
+    });
+  };
 
   const sizeClasses = {
     normal: 'px-4 py-1.5 text-md',
@@ -62,7 +74,7 @@ export const ActionButtons = ({
           href={liveDemoUrl}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => handleActionClick(e, 'live_demo', liveDemoUrl)}
           className={`flex items-center justify-center gap-2 rounded-full bg-primary font-mono font-medium text-primary-foreground transition-transform duration-300 ease-in-out hover:scale-105 border-2 border-secondary ${sizeClasses[size]} ${disabledClasses}`}
         >
           <GlobeIcon className="h-4 w-4" />
@@ -75,7 +87,7 @@ export const ActionButtons = ({
           href={repoUrl}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => handleActionClick(e, 'repo', repoUrl)}
           className={`flex items-center justify-center gap-2 rounded-full bg-secondary font-mono font-medium text-secondary-foreground transition-transform duration-300 ease-in-out hover:scale-105 ${sizeClasses[size]} ${disabledClasses}`}
         >
           <GitHubIcon className="h-4 w-4" />

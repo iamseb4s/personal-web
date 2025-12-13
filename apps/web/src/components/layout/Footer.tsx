@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Container from '@/components/ui/Container';
 import { NavLink, ExternalLinkComponent } from '@/types/strapi';
+import { TrackedExternalLink } from '@/components/ui/TrackedExternalLink'; // Import the new component
 
 interface FooterProps {
   lang: string;
@@ -52,17 +53,18 @@ export const Footer = ({
         <div className="flex items-center">
           {externalLinks.map((link, index) => (
             <React.Fragment key={link.id}>
-              <a
+              <TrackedExternalLink
                 href={link.url}
-                target="_blank"
-                rel="noreferrer"
+                label={link.text}
+                location="footer"
+                targetType="external_link"
                 className="group text-base md:text:xl sm:text-lg font-mono text-secondary-foreground transition"
               >
                 <span className="hover:secondary-foreground">
                   {link.text}
                 </span>
                 <span className="block max-w-0 group-hover:max-w-full transition-all duration-300 h-0.5 bg-secondary-foreground group-hover:bg-secondary-foreground"></span>
-              </a>
+              </TrackedExternalLink>
               {index < externalLinks.length - 1 && (
                 <span aria-hidden="true" className="mx-5 sm:mx-5 text-secondary-foreground">·</span>
               )}

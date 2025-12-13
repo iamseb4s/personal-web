@@ -118,6 +118,7 @@ export const ProjectCard = ({
             repoText={repoText}
             liveDemoTextShort={liveDemoTextShort}
             repoTextShort={repoTextShort}
+            trackingLocation="project_card"
           />
           <div className="flex flex-wrap items-center gap-2 mt-6">
             {project.technologies.map((tech) => {

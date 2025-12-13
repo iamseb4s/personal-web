@@ -3,6 +3,7 @@ import Link from 'next/link';
 import ThemeSwitcher from '@/components/ui/ThemeSwitcher';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import Container from '@/components/ui/Container';
+import { TrackedInternalLink } from '@/components/ui/TrackedInternalLink';
 
 interface LocaleInfo {
   id: number;
@@ -51,14 +52,17 @@ export const Header = ({ displayText, navLinks, lang, defaultLocale, availableLo
           {/* Text Buttons Group */}
           <div className="flex items-center gap-4 sm:gap-6 md:gap-8">
             {navLinks.map((link) => (
-              <Link
+              <TrackedInternalLink
                 key={link.id}
                 href={getUrlFromTarget(link.target_id, lang, defaultLocale)}
+                location="header"
+                target={link.target_id}
+                label={link.text}
                 className="font-mono  relative group text-foreground transition-colors"
               >
                 {link.text}
                 <span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-foreground transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out origin-center "></span>
-              </Link>
+              </TrackedInternalLink>
             ))}
           </div>
 
