@@ -1,6 +1,6 @@
 # Personal Portfolio - A Headless Monorepo Showcase
 
-[![Next.js](https://img.shields.io/badge/Next.js-15.5-black?logo=next.js)](https://nextjs.org/) [![Strapi](https://img.shields.io/badge/Strapi-5.31-8F75FF?logo=strapi)](https://strapi.io/) [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/) [![Docker](https://img.shields.io/badge/Docker-gray?logo=docker)](https://www.docker.com/)
+[![Next.js](https://img.shields.io/badge/Next.js-15.5.9-black?logo=next.js)](https://nextjs.org/) [![Strapi](https://img.shields.io/badge/Strapi-5.32.0-8F75FF?logo=strapi)](https://strapi.io/) [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/) [![Docker](https://img.shields.io/badge/Docker-gray?logo=docker)](https://www.docker.com/)
 
 ### 🌐 [View Live Demo](https://iamsebas.dev)
 
@@ -10,6 +10,7 @@ This repository contains the source code for my personal portfolio, meticulously
 
 - **Headless Architecture:** Decoupled Next.js frontend and Strapi CMS backend for independent development and scaling.
 - **Monorepo Structure:** Simplifies dependency management and ensures consistency across the `web` and `cms` applications.
+- **GitHub Flow:** Adopts a streamlined workflow using feature branches and direct integration into `main`, favoring velocity and continuous delivery.
 - **Developer Experience (DX):** A fully containerized multi-service environment using Docker Compose ensures a consistent and hassle-free setup.
 - **Performance & Scalability:** Optimized Next.js frontend, powerful Strapi API, and multi-stage Docker builds create a lean and efficient application.
 - **Robust CI/CD Pipeline:** Automated quality checks on every pull request and release-based deployments to production ensure stability and predictability.
@@ -42,12 +43,20 @@ The entire lifecycle is containerized using Docker and Docker Compose, orchestra
 - **Development (`docker-compose.dev.yml`):** Starts both services with hot-reloading for a fast feedback loop.
 - **Staging & Production (`docker-compose.staging.yml`, `docker-compose.prod.yml`):** Use multi-stage builds to create lean, secure, and optimized production images, with bind mounts for data persistence.
 
+### 5. Observability
+
+To ensure system reliability, the web application includes a dedicated health check endpoint at `/api/health`.
+
+- **Purpose:** Used by internal heartbeats, Cloudflare Workers, and the CI/CD pipeline to verify the application's uptime without consuming CMS resources.
+- **Security:** The endpoint is public but protected by a simple header check. It requires `x-health-check: true` to return a `200 OK` status; otherwise, it returns `404 Not Found` to obscure it from scanners.
+- **Response:** Returns a JSON object with a status and a timestamp in the 'America/Lima' timezone.
+
 ## 🛠️ Technology Stack
 
 | Category              | Technology                                                              |
 | --------------------- | ----------------------------------------------------------------------- |
-| **Frontend (Web)**    | [Next.js](https://nextjs.org/) (v15.5), [React](https://react.dev/) (v19) |
-| **Backend (CMS)**     | [Strapi](https://strapi.io/) (v5.31)                                    |
+| **Frontend (Web)**    | [Next.js](https://nextjs.org/) (v15.5.9), [React](https://react.dev/) (v19) |
+| **Backend (CMS)**     | [Strapi](https://strapi.io/) (v5.32.0)                                    |
 | **Language**          | [TypeScript](https://www.typescriptlang.org/) (v5)                      |
 | **Styling**           | [Tailwind CSS](https://tailwindcss.com/) (v4)                           |
 | **Containerization**  | [Docker](https://www.docker.com/) & Docker Compose                    |
@@ -124,7 +133,7 @@ This project employs a robust CI/CD strategy to ensure code quality, stability, 
 <details>
 <summary><strong>View Step-by-Step Release Checklist</strong></summary>
 
-1. Open PR from `develop` to `main`. Wait for `Main Branch - Quality Check` workflow to pass.
+1. Open PR from feature branch to `main`. Wait for `Main Branch - Quality Check` workflow to pass.
 2. Merge PR into `main`.
 3. From `main`, create and push a release candidate tag (e.g., `git tag v1.1.0-rc.1` && `git push --tags`).
 4. On GitHub, publish a **pre-release** using the new RC tag.
