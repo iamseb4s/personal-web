@@ -1,5 +1,4 @@
 import React from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 import { HeroSubtitle } from '@/components/ui/HeroSubtitle';
 import Container from '@/components/ui/Container';
