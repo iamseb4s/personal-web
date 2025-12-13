@@ -14,6 +14,7 @@ This repository contains the source code for my personal portfolio, meticulously
 - **Developer Experience (DX):** A fully containerized multi-service environment using Docker Compose ensures a consistent and hassle-free setup.
 - **Performance & Scalability:** Optimized Next.js frontend, powerful Strapi API, and multi-stage Docker builds create a lean and efficient application.
 - **Robust CI/CD Pipeline:** Automated quality checks on every pull request and release-based deployments to production ensure stability and predictability.
+- **Privacy-Focused Analytics:** Integration of analytics for tracking user interactions without compromising privacy.
 
 ## 🏛️ System Architecture
 
@@ -99,9 +100,10 @@ This guide explains how to set up the local multi-service development environmen
     ```
 
 2. **Configure Environment Variables:**
-    Copy the `.env.example` files for both applications and fill in the required values.
+    Copy the example environment files.
 
     ```sh
+    cp .env.example .env
     cp apps/web/.env.example apps/web/.env.development
     cp apps/cms/.env.example apps/cms/.env.development
     ```
