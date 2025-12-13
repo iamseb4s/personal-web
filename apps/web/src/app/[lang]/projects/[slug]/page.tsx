@@ -19,26 +19,12 @@ import {
   ProjectPageData,
   Locale,
   NotFoundPageData,
+  TextBlockComponent,
+  BodyImageComponent,
+  DynamicZoneComponent,
 } from "@/types/strapi";
 import { TrackedInternalLink } from "@/components/ui/TrackedInternalLink";
-
-// Define types for Strapi data (can be moved to a separate file if reused)
-interface TextBlockComponent {
-  __component: "text.text-block";
-  content: string;
-}
-interface BodyImageComponent {
-  __component: "image.body-image";
-  image: {
-    url: string;
-    width: number;
-    height: number;
-    alternativeText?: string;
-  } | null;
-  caption?: string;
-  width?: number;
-}
-type DynamicZoneComponent = TextBlockComponent | BodyImageComponent;
+import { generateSeoMetadata } from "@/lib/seo";
 
 interface PageProps {
   params: Promise<{ slug: string; lang: string }>;
@@ -61,12 +47,23 @@ export async function generateMetadata({
   if (!project) {
     const notFoundPageData = await getNotFoundPageData(lang);
     const notFoundPageProps: NotFoundPageData = notFoundPageData.data;
-    const pageTitle = notFoundPageProps.seo?.page_title;
-    const pageDescription = notFoundPageProps.seo?.page_description;
+    
+    // SEO Priority for Not Found: 1. Specific 404 SEO -> 2. Specific 404 CMS content (title/description)
+    if (notFoundPageProps.seo) {
+      return generateSeoMetadata({
+        seo: notFoundPageProps.seo,
+        path: `/projects/${slug}`, // conceptual path for the 404 page context
+        global: {
+          site_brand_name: globalProps.site_brand_name,
+          site_logo: globalProps.site_logo,
+        },
+      });
+    }
 
+    // Fallback to specific 404 page content from CMS if no SEO component
     const metadata: Metadata = {
-      title: `${pageTitle} | ${globalProps.site_brand_name}`,
-      description: pageDescription,
+      title: `${notFoundPageProps.title} | ${globalProps.site_brand_name}`,
+      description: notFoundPageProps.description,
     };
 
     if (siteLogoUrl) {
@@ -78,9 +75,6 @@ export async function generateMetadata({
     return metadata;
   }
 
-  const defaultLocale =
-    (localesData as Locale[]).find((l: Locale) => l.isDefault)?.code ||
-    "es-419";
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:4100";
 
   const alternates: { [key: string]: string } = {};
@@ -89,35 +83,28 @@ export async function generateMetadata({
     alternates[locale.code] = `${siteUrl}${localePath}/projects/${slug}`;
   });
 
-  const metadata: Metadata = {
-    title: `${project.title} | ${globalProps.site_brand_name}`,
-    description: project.description,
-    alternates: {
-      canonical: `${siteUrl}/${
-        lang === defaultLocale ? "" : lang + "/"
-      }projects/${slug}`,
-      languages: alternates,
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        "max-video-preview": -1,
-        "max-image-preview": "large",
-        "max-snippet": -1,
-      },
-    },
+  const seoData = project.seo || {
+    id: 0,
+    metaTitle: project.title,
+    metaDescription: project.description || "",
+    metaImage: project.main_image || undefined,
+    openGraph: {
+      id: 0,
+      ogTitle: project.title,
+      ogDescription: project.description || "",
+      ogImage: project.main_image || undefined,
+    }
   };
 
-  if (siteLogoUrl) {
-    metadata.icons = {
-      icon: getStrapiURL(siteLogoUrl),
-    };
-  }
-
-  return metadata;
+  return generateSeoMetadata({
+    seo: seoData,
+    path: `/projects/${slug}`,
+    global: {
+      site_brand_name: globalProps.site_brand_name,
+      site_logo: globalProps.site_logo,
+    },
+    alternates,
+  });
 }
 
 // The main page component
@@ -134,13 +121,13 @@ export default async function ProjectPage({ params }: PageProps) {
   }
 
   const projectPageProps: ProjectPageData = projectPageData.data;
-  const defaultLocale =
+  const defaultLocaleComponent =
     (localesData as Locale[]).find((l: Locale) => l.isDefault)?.code ||
     "es-419";
 
-  const homePath = lang === defaultLocale ? "/" : `/${lang}`;
+  const homePath = lang === defaultLocaleComponent ? "/" : `/${lang}`;
   const projectsPath =
-    lang === defaultLocale ? "/#projects" : `/${lang}/#projects`;
+    lang === defaultLocaleComponent ? "/#projects" : `/${lang}/#projects`;
 
   // --- Render Dynamic Zone Content ---
   const renderDynamicZone = (body: DynamicZoneComponent[]) => {
@@ -277,7 +264,7 @@ export default async function ProjectPage({ params }: PageProps) {
 
       <div className="container mx-auto max-w-screen-md lg:max-w-4xl px-4">
         <div
-          className={`${
+          className={`${ 
             hasHeroImage ? "mt-14" : "mt-16 sm:mt-24"
           } mb-12 text-center md:px-10`}
         >
