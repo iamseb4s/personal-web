@@ -1,23 +1,26 @@
-name: Deploy Releases and Pre-Releases
+name: Deploy Pipeline
 
 on:
+  push:
+    branches:
+      - main
   release:
     types: [published]
 
 jobs:
-  deploy_prerelease_to_staging:
-    name: Deploy Pre-Release to Staging
+  # === STAGING: Automatic on push to main ===
+  deploy_staging:
+    name: Deploy Staging
     runs-on: self-hosted
-    if: github.event.release.prerelease == true
+    # Run if it's a push to main
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     env:
       COMPOSE_PROJECT_NAME: portfolio-staging
       WEB_CONTAINER_NAME: staging-web
       CMS_CONTAINER_NAME: staging-cms
     steps:
-      - name: Checkout correct tag
+      - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref_name }}
 
       - name: Set up web environment file
         run: echo "${{ secrets.DOTENV_STAGING_WEB }}" > apps/web/.env.staging
@@ -58,16 +61,18 @@ jobs:
         if: always()
         run: docker image prune -a -f
 
-  deploy_release_to_production:
-    name: Deploy Release to Production
+  # === PRODUCTION: Manual on release publish ===
+  deploy_production:
+    name: Deploy Production
     runs-on: self-hosted
-    if: github.event.release.prerelease == false
+    # Run if it's a published release
+    if: github.event_name == 'release' && github.event.action == 'published'
     env:
       COMPOSE_PROJECT_NAME: portfolio-prod
       WEB_CONTAINER_NAME: prod-web
       CMS_CONTAINER_NAME: prod-cms
     steps:
-      - name: Checkout correct tag
+      - name: Checkout tag
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref_name }}
