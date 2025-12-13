@@ -1,4 +1,4 @@
-import { StrapiMedia } from './strapi';
+import { StrapiMedia, SharedSeo, DynamicZoneComponent } from "./strapi";
 
 export interface StrapiTechnology {
   id: number;
@@ -16,4 +16,7 @@ export interface Project {
   repo_url?: string;
   live_demo?: string | null;
   main_image: StrapiMedia | null;
+  show_hero_image: boolean;
+  body: DynamicZoneComponent[];
+  seo: SharedSeo | null;
 }

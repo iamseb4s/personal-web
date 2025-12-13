@@ -18,6 +18,21 @@ export function getStrapiURL(path = '') {
 }
 
 /**
+ * Get full Strapi Media URL
+ * @param {string | null} url Relative URL of the media
+ * @returns {string | null} Full Media URL
+ */
+export function getStrapiMedia(url: string | null) {
+  if (url == null) {
+    return null;
+  }
+  if (url.startsWith('http') || url.startsWith('//')) {
+    return url;
+  }
+  return getStrapiURL(url);
+}
+
+/**
  * Helper to make GET requests to Strapi API
  * @param {string} path Path of the API route
  * @param {object} urlParamsObject URL params object, will be stringified
@@ -93,6 +108,20 @@ export async function getProjectBySlugFromAPI(slug: string, locale: string) {
           },
         },
       },
+      seo: {
+        populate: {
+          metaImage: {
+            fields: ['url', 'width', 'height', 'alternativeText'],
+          },
+          openGraph: {
+            populate: {
+              ogImage: {
+                fields: ['url', 'width', 'height', 'alternativeText'],
+              },
+            },
+          },
+        },
+      },
     },
     locale,
   });
@@ -113,7 +142,18 @@ export async function getGlobalData(locale: string) {
         fields: ['url', 'alternativeText'],
       },
       default_seo: {
-        fields: ['page_title', 'page_description'],
+        populate: {
+          metaImage: {
+            fields: ['url', 'width', 'height', 'alternativeText'],
+          },
+          openGraph: {
+            populate: {
+              ogImage: {
+                fields: ['url', 'width', 'height', 'alternativeText'],
+              },
+            },
+          },
+        },
       },
     },
     locale,
@@ -175,7 +215,18 @@ export async function getHomePageData(locale: string) {
   const query = qs.stringify({
     populate: {
       seo: {
-        fields: ['page_title', 'page_description'],
+        populate: {
+          metaImage: {
+            fields: ['url', 'width', 'height', 'alternativeText'],
+          },
+          openGraph: {
+            populate: {
+              ogImage: {
+                fields: ['url', 'width', 'height', 'alternativeText'],
+              },
+            },
+          },
+        },
       },
       sections: {
         on: {
@@ -213,9 +264,21 @@ export async function getHomePageData(locale: string) {
 
 export async function getNotFoundPageData(locale: string) {
   const query = qs.stringify({
+    fields: ['title', 'description', 'message'],
     populate: {
       seo: {
-        fields: ['page_title', 'page_description'],
+        populate: {
+          metaImage: {
+            fields: ['url', 'width', 'height', 'alternativeText'],
+          },
+          openGraph: {
+            populate: {
+              ogImage: {
+                fields: ['url', 'width', 'height', 'alternativeText'],
+              },
+            },
+          },
+        },
       },
       link_button: {
         fields: ['text', 'target_id'],
