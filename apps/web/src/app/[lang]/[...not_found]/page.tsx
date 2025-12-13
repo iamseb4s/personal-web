@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getGlobalData, getNotFoundPageData, getStrapiURL } from '@/lib/strapi';
 import { GlobalData, NotFoundPageData } from '@/types/strapi';
+import { generateSeoMetadata } from "@/lib/seo";
 
 interface PageProps {
   params: Promise<{
@@ -19,25 +20,51 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const globalProps: GlobalData = globalData.data;
   const notFoundPageProps: NotFoundPageData = notFoundPageData.data;
-  const seo = notFoundPageProps?.seo || globalProps?.default_seo;
-  const siteBrandName = globalProps?.site_brand_name;
-
-  const pageTitle = seo?.page_title;
-  const pageDescription = seo?.page_description;
   const siteLogoUrl = globalProps.site_logo?.url;
 
-  const metadata: Metadata = {
-    title: `${pageTitle} | ${siteBrandName}`,
-    description: pageDescription,
-  };
-
-  if (siteLogoUrl) {
-    metadata.icons = {
-      icon: getStrapiURL(siteLogoUrl),
-    };
+  // 1. Try Specific 404 SEO Component
+  if (notFoundPageProps.seo) {
+    return generateSeoMetadata({
+      seo: notFoundPageProps.seo,
+      path: "/404",
+      global: {
+        site_brand_name: globalProps.site_brand_name,
+        site_logo: globalProps.site_logo,
+      },
+    });
   }
 
-  return metadata;
+  // 2. Fallback to 404 Page Content (Title/Description) from CMS
+  // This ensures we show "Página no encontrada | Brand" instead of "undefined | Brand"
+  if (notFoundPageProps.title) {
+    const metadata: Metadata = {
+      title: `${notFoundPageProps.title} | ${globalProps.site_brand_name}`,
+      description: notFoundPageProps.description,
+    };
+
+    if (siteLogoUrl) {
+      metadata.icons = {
+        icon: getStrapiURL(siteLogoUrl),
+      };
+    }
+    return metadata;
+  }
+
+  // 3. Last Resort: Global Default SEO
+  if (globalProps.default_seo) {
+    return generateSeoMetadata({
+      seo: globalProps.default_seo,
+      path: "/404",
+      global: {
+        site_brand_name: globalProps.site_brand_name,
+        site_logo: globalProps.site_logo,
+      },
+    });
+  }
+
+  return {
+    title: `404 | ${globalProps.site_brand_name}`,
+  };
 }
 
 export default function NotFoundCatchAll() {

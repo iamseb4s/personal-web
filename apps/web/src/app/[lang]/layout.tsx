@@ -5,6 +5,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { getAvailableLocales, getGlobalData, getStrapiURL, getHeaderData, getFooterData } from '@/lib/strapi';
 import { GlobalData, HeaderData, FooterData, Locale } from '@/types/strapi';
+import { generateSeoMetadata } from '@/lib/seo';
 
 export const bebasNeue = Bebas_Neue({
   variable: '--font-bebas-neue',
@@ -64,13 +65,24 @@ export async function generateMetadata({
     alternates[locale.code] = `${siteUrl}${localePath}`;
   });
 
-  const pageTitle = globalProps.default_seo?.page_title ? `${globalProps.default_seo.page_title} | ${globalProps.site_brand_name}` : globalProps.site_brand_name;
-  const pageDescription = globalProps.default_seo?.page_description || '';
-  const siteLogoUrl = globalProps.site_logo?.url;
+  // Use generateSeoMetadata for global SEO if default_seo is configured in CMS
+  if (globalProps.default_seo) {
+    return generateSeoMetadata({
+      seo: globalProps.default_seo,
+      path: `/${lang === defaultLocale ? '' : lang}`, // Canonical path for this layout
+      global: {
+        site_brand_name: globalProps.site_brand_name,
+        site_logo: globalProps.site_logo,
+      },
+      alternates,
+    });
+  }
 
+  // Final fallback using ONLY available CMS global data
+  const siteLogoUrl = globalProps.site_logo?.url;
   const metadata: Metadata = {
-    title: pageTitle,
-    description: pageDescription,
+    title: globalProps.site_brand_name,
+    description: '', // Empty description as no fallback text is available in CMS
     alternates: {
       canonical: `${siteUrl}/${lang === defaultLocale ? '' : lang}`,
       languages: alternates,

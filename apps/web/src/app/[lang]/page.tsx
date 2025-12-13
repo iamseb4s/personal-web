@@ -6,6 +6,7 @@ import ScrollReveal from "@/components/ui/ScrollReveal";
 import { fetchAPI, getAvailableLocales, getHomePageData, getProjectPageData, getGlobalData } from "@/lib/strapi";
 import { HomePageData, HomePageSection, ProjectPageData, GlobalData } from "@/types/strapi";
 import { Project as StrapiProject } from "@/types/project"; // Assuming Project type is defined here
+import { generateSeoMetadata } from "@/lib/seo";
 
 interface HomeProps {
   params: Promise<{ lang: string }>;
@@ -21,15 +22,24 @@ export async function generateMetadata({ params }: HomeProps): Promise<Metadata>
   const homePageProps: HomePageData = homePageResponse.data;
   const globalProps: GlobalData = globalDataResponse.data;
 
-  const pageSeo = homePageProps?.seo || globalProps?.default_seo;
-  const siteBrandName = globalProps?.site_brand_name;
+  // SEO Priority: 1. Home Page specific SEO -> 2. Global Default SEO
+  const pageSeo = homePageProps.seo || globalProps.default_seo;
 
-  const pageTitle = pageSeo?.page_title ? `${pageSeo.page_title} | ${siteBrandName}` : siteBrandName;
-  const pageDescription = pageSeo?.page_description || '';
+  if (pageSeo) {
+    return generateSeoMetadata({
+      seo: pageSeo,
+      path: "/",
+      global: {
+        site_brand_name: globalProps.site_brand_name,
+        site_logo: globalProps.site_logo,
+      },
+    });
+  }
 
+  // Fallback if no SEO component is available anywhere (should be rare if default_seo is configured)
   return {
-    title: pageTitle,
-    description: pageDescription,
+    title: globalProps.site_brand_name, // Fallback to site brand name
+    description: "Welcome to my personal portfolio", // Generic fallback description
   };
 }
 

@@ -9,10 +9,26 @@ export interface StrapiMedia {
   height: number;
 }
 
-export interface SEOComponent {
+export interface SharedOpenGraph {
   id: number;
-  page_title: string;
-  page_description: string;
+  ogDescription: string;
+  ogImage?: StrapiMedia;
+  ogTitle: string;
+  ogType?: string;
+  ogUrl?: string;
+}
+
+export interface SharedSeo {
+  id: number;
+  canonicalURL?: string;
+  keywords?: string;
+  metaDescription: string;
+  metaImage?: StrapiMedia;
+  metaRobots?: string;
+  metaTitle: string;
+  metaViewport?: string;
+  openGraph?: SharedOpenGraph;
+  structuredData?: object;
 }
 
 export interface NavLink {
@@ -42,6 +58,25 @@ export interface Locale {
   isDefault: boolean;
 }
 
+// Interfaces for Dynamic Zone Components
+export interface TextBlockComponent {
+  __component: "text.text-block";
+  content: string;
+}
+export interface BodyImageComponent {
+  __component: "image.body-image";
+  image: {
+    url: string;
+    width: number;
+    height: number;
+    alternativeText?: string;
+  } | null;
+  caption?: string;
+  width?: number;
+}
+export type DynamicZoneComponent = TextBlockComponent | BodyImageComponent;
+
+
 // B. Single Type Interfaces
 export interface GlobalData {
   id: number;
@@ -51,7 +86,7 @@ export interface GlobalData {
   publishedAt: string;
   locale: string;
   site_logo: StrapiMedia | null;
-  default_seo: SEOComponent | null;
+  default_seo: SharedSeo | null;
 }
 
 export interface HeaderData {
@@ -98,7 +133,7 @@ export interface NotFoundPageData {
   updatedAt: string;
   publishedAt: string;
   locale: string;
-  seo: SEOComponent | null;
+  seo: SharedSeo | null;
   link_button: NavLink | null;
 }
 
@@ -137,6 +172,6 @@ export interface HomePageData {
   updatedAt: string;
   publishedAt: string;
   locale: string;
-  seo: SEOComponent | null;
+  seo: SharedSeo | null;
   sections: HomePageSection[];
 }

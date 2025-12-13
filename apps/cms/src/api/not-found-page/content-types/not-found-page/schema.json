@@ -56,7 +56,7 @@
           "localized": true
         }
       },
-      "component": "common.seo",
+      "component": "shared.seo",
       "repeatable": false
     }
   }
