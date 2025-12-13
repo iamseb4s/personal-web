@@ -13,18 +13,6 @@ export interface ButtonsActionButtonTexts extends Struct.ComponentSchema {
   };
 }
 
-export interface CommonSeo extends Struct.ComponentSchema {
-  collectionName: 'components_common_seos';
-  info: {
-    displayName: 'SEO';
-    icon: 'eye';
-  };
-  attributes: {
-    page_description: Schema.Attribute.Text;
-    page_title: Schema.Attribute.String;
-  };
-}
-
 export interface ImageBodyImage extends Struct.ComponentSchema {
   collectionName: 'components_image_body_images';
   info: {
@@ -116,6 +104,57 @@ export interface SectionsStack extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedOpenGraph extends Struct.ComponentSchema {
+  collectionName: 'components_shared_open_graphs';
+  info: {
+    displayName: 'openGraph';
+    icon: 'project-diagram';
+  };
+  attributes: {
+    ogDescription: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 200;
+      }>;
+    ogImage: Schema.Attribute.Media<'images'>;
+    ogTitle: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 70;
+      }>;
+    ogType: Schema.Attribute.String;
+    ogUrl: Schema.Attribute.String;
+  };
+}
+
+export interface SharedSeo extends Struct.ComponentSchema {
+  collectionName: 'components_shared_seos';
+  info: {
+    displayName: 'seo';
+    icon: 'search';
+  };
+  attributes: {
+    canonicalURL: Schema.Attribute.String;
+    keywords: Schema.Attribute.Text;
+    metaDescription: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 160;
+        minLength: 25;
+      }>;
+    metaImage: Schema.Attribute.Media<'images'>;
+    metaRobots: Schema.Attribute.String;
+    metaTitle: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 60;
+      }>;
+    metaViewport: Schema.Attribute.String;
+    openGraph: Schema.Attribute.Component<'shared.open-graph', false>;
+    structuredData: Schema.Attribute.JSON;
+  };
+}
+
 export interface TextTextBlock extends Struct.ComponentSchema {
   collectionName: 'components_text_text_blocks';
   info: {
@@ -131,13 +170,14 @@ declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'buttons.action-button-texts': ButtonsActionButtonTexts;
-      'common.seo': CommonSeo;
       'image.body-image': ImageBodyImage;
       'link.external-link': LinkExternalLink;
       'link.nav-link': LinkNavLink;
       'sections.hero': SectionsHero;
       'sections.projects-feed': SectionsProjectsFeed;
       'sections.stack': SectionsStack;
+      'shared.open-graph': SharedOpenGraph;
+      'shared.seo': SharedSeo;
       'text.text-block': TextTextBlock;
     }
   }
