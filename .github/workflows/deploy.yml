@@ -36,7 +36,7 @@ jobs:
 
       - name: Health Check
         run: |
-          echo "⏳ Waiting for staging application health check..."
+          echo "⏳ Waiting for application health check..."
 
           NETWORK_NAME="${{ env.COMPOSE_PROJECT_NAME }}_default"
           SERVICE_NAME="${{ env.WEB_CONTAINER_NAME }}"
@@ -44,7 +44,7 @@ jobs:
           end_time=$((SECONDS+60))
 
           while [ $SECONDS -lt $end_time ]; do
-            if docker run --rm --network=$NETWORK_NAME curlimages/curl:8.7.1 -s --fail "http://${SERVICE_NAME}:4000" -o /dev/null; then
+            if docker run --rm --network=$NETWORK_NAME curlimages/curl:8.7.1 -s --fail -H "x-health-check: true" "http://${SERVICE_NAME}:4000/api/health" -o /dev/null; then
               echo "✅ Health check passed!"
               exit 0
             fi
@@ -99,7 +99,7 @@ jobs:
           end_time=$((SECONDS+60))
 
           while [ $SECONDS -lt $end_time ]; do
-            if docker run --rm --network=$NETWORK_NAME curlimages/curl:8.7.1 -s --fail "http://${SERVICE_NAME}:4000" -o /dev/null; then
+            if docker run --rm --network=$NETWORK_NAME curlimages/curl:8.7.1 -s --fail -H "x-health-check: true" "http://${SERVICE_NAME}:4000/api/health" -o /dev/null; then
               echo "✅ Health check passed!"
               exit 0
             fi
