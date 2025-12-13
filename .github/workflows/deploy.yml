@@ -65,8 +65,8 @@ jobs:
   deploy_production:
     name: Deploy Production
     runs-on: self-hosted
-    # Run if it's a published release
-    if: github.event_name == 'release' && github.event.action == 'published'
+    # Run if it's a published release AND NOT a pre-release
+    if: github.event_name == 'release' && github.event.action == 'published' && !github.event.release.prerelease
     env:
       COMPOSE_PROJECT_NAME: portfolio-prod
       WEB_CONTAINER_NAME: prod-web
