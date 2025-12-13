@@ -12,8 +12,8 @@ jobs:
   deploy_staging:
     name: Deploy Staging
     runs-on: self-hosted
-    # Run if it's a push to main
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Run if it's a push to main OR a published pre-release
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'release' && github.event.action == 'published' && github.event.release.prerelease)
     env:
       COMPOSE_PROJECT_NAME: portfolio-staging
       WEB_CONTAINER_NAME: staging-web
@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'release' && github.ref_name || '' }}
 
       - name: Set up web environment file
         run: echo "${{ secrets.DOTENV_STAGING_WEB }}" > apps/web/.env.staging
