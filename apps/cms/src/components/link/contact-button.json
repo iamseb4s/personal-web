@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_link_contact_buttons",
+  "info": {
+    "displayName": "Contact Button",
+    "icon": "mail"
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "string",
+      "required": true
+    },
+    "modal_title": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string",
+      "required": true
+    },
+    "linkedin_url": {
+      "type": "string",
+      "required": true
+    },
+    "github_url": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

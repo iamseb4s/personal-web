@@ -36,6 +36,21 @@ export interface ImageBodyImage extends Struct.ComponentSchema {
   };
 }
 
+export interface LinkContactButton extends Struct.ComponentSchema {
+  collectionName: 'components_link_contact_buttons';
+  info: {
+    displayName: 'Contact Button';
+    icon: 'mail';
+  };
+  attributes: {
+    email: Schema.Attribute.String & Schema.Attribute.Required;
+    github_url: Schema.Attribute.String & Schema.Attribute.Required;
+    linkedin_url: Schema.Attribute.String & Schema.Attribute.Required;
+    modal_title: Schema.Attribute.String;
+    text: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface LinkExternalLink extends Struct.ComponentSchema {
   collectionName: 'components_link_external_links';
   info: {
@@ -67,12 +82,9 @@ export interface SectionsHero extends Struct.ComponentSchema {
     icon: 'apps';
   };
   attributes: {
+    contact_button: Schema.Attribute.Component<'link.contact-button', false>;
     day_image: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
     description: Schema.Attribute.Text;
-    external_link_button: Schema.Attribute.Component<
-      'link.external-link',
-      false
-    >;
     greeting: Schema.Attribute.String;
     internal_link_button: Schema.Attribute.Component<'link.nav-link', false>;
     night_image: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
@@ -171,6 +183,7 @@ declare module '@strapi/strapi' {
     export interface ComponentSchemas {
       'buttons.action-button-texts': ButtonsActionButtonTexts;
       'image.body-image': ImageBodyImage;
+      'link.contact-button': LinkContactButton;
       'link.external-link': LinkExternalLink;
       'link.nav-link': LinkNavLink;
       'sections.hero': SectionsHero;
