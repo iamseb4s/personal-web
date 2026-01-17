@@ -1,5 +1,1 @@
-export default () => ({
-  seo: {
-    enabled: true,
-  },
-});
+export default () => ({});

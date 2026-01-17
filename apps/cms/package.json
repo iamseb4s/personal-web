@@ -15,9 +15,9 @@
     "upgrade:dry": "npx @strapi/upgrade latest --dry"
   },
   "dependencies": {
+    "@strapi-community/plugin-seo": "^2.1.1",
     "@strapi/plugin-cloud": "^5.33.3",
     "@strapi/plugin-graphql": "^5.33.3",
-    "@strapi/plugin-seo": "^2.0.9",
     "@strapi/plugin-users-permissions": "^5.33.3",
     "@strapi/strapi": "^5.33.3",
     "better-sqlite3": "11.3.0",
