@@ -43,6 +43,15 @@ export interface ExternalLinkComponent {
   url: string;
 }
 
+export interface ContactButtonComponent {
+  id: number;
+  text: string;
+  modal_title: string;
+  email: string;
+  linkedin_url: string;
+  github_url: string;
+}
+
 export interface ActionButtonTextsComponent {
   id: number;
   live_demo_button_text: string;
@@ -147,7 +156,7 @@ export interface HeroSection {
   day_image: StrapiMedia | null;
   night_image: StrapiMedia | null;
   internal_link_button: NavLink | null;
-  external_link_button: ExternalLinkComponent | null;
+  contact_button: ContactButtonComponent | null;
 }
 
 export interface ProjectsFeedSection {

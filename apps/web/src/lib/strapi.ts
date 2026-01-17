@@ -236,8 +236,8 @@ export async function getHomePageData(locale: string) {
               internal_link_button: {
                 fields: ['text', 'target_id'],
               },
-              external_link_button: {
-                fields: ['text', 'url'],
+              contact_button: {
+                fields: ['text', 'modal_title', 'email', 'linkedin_url', 'github_url'],
               },
               day_image: { fields: ['url', 'alternativeText'] },
               night_image: { fields: ['url', 'alternativeText'] },
