@@ -119,6 +119,16 @@ export default async function LangLayout({
 
   return (
     <>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.ENV = {
+              NEXT_PUBLIC_STRAPI_API_URL: "${process.env.NEXT_PUBLIC_STRAPI_API_URL || ''}",
+              NEXT_PUBLIC_SITE_URL: "${process.env.NEXT_PUBLIC_SITE_URL || ''}"
+            };
+          `,
+        }}
+      />
       <Header
         displayText={headerProps.display_text}
         navLinks={headerProps.nav_links}

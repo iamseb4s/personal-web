@@ -1,5 +1,14 @@
 import qs from 'qs';
 
+declare global {
+  interface Window {
+    ENV?: {
+      NEXT_PUBLIC_STRAPI_API_URL?: string;
+      NEXT_PUBLIC_SITE_URL?: string;
+    };
+  }
+}
+
 /**
  * Get full Strapi URL from path
  * @param {string} path Path of the URL
@@ -9,10 +18,13 @@ export function getStrapiURL(path = '') {
   if (path.startsWith('http')) {
     return path;
   }
+  
+  // Prefer the internal URL on the server, and the public one on the client.
+  // Fallback to whichever is available before defaulting to localhost.
   const strapiUrl =
     typeof window === 'undefined'
-      ? process.env.STRAPI_INTERNAL_URL
-      : process.env.NEXT_PUBLIC_STRAPI_API_URL;
+      ? process.env.STRAPI_INTERNAL_URL || process.env.NEXT_PUBLIC_STRAPI_API_URL
+      : window.ENV?.NEXT_PUBLIC_STRAPI_API_URL || process.env.NEXT_PUBLIC_STRAPI_API_URL;
 
   return `${strapiUrl || 'http://localhost:1337'}${path}`;
 }
