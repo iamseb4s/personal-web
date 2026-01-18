@@ -1,11 +1,14 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { HeroSubtitle } from '@/components/ui/HeroSubtitle';
 import Container from '@/components/ui/Container';
 import { getStrapiURL } from '@/lib/strapi';
 import { HeroSection as HeroSectionData } from '@/types/strapi';
-import { TrackedExternalLink } from '@/components/ui/TrackedExternalLink';
 import { TrackedInternalLink } from '@/components/ui/TrackedInternalLink';
+import { ContactModal } from '@/components/ui/ContactModal';
+import { trackEvent } from '@/lib/umami';
 
 interface HeroProps {
   lang: string;
@@ -24,6 +27,7 @@ const getUrlFromTarget = (targetId: string, lang: string, defaultLocale: string)
 };
 
 export const Hero = ({ lang, defaultLocale, data }: HeroProps) => {
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const internalLinkUrl = data.internal_link_button ? getUrlFromTarget(data.internal_link_button.target_id, lang, defaultLocale) : '';
 
   return (
@@ -55,16 +59,21 @@ export const Hero = ({ lang, defaultLocale, data }: HeroProps) => {
                 {data.internal_link_button.text}
               </TrackedInternalLink>
             )}
-            {data.external_link_button && (
-              <TrackedExternalLink
-                href={data.external_link_button.url}
-                label={data.external_link_button.text}
-                location="hero"
-                targetType="external_link"
+            {data.contact_button && (
+              <button
+                onClick={() => {
+                  trackEvent('navigation', {
+                    type: 'external',
+                    location: 'hero',
+                    target: 'contact_modal',
+                    label: data.contact_button?.text || 'Contact',
+                  });
+                  setIsContactModalOpen(true);
+                }}
                 className="inline-flex h-10 xl:h-12 items-center justify-center rounded-full border border-foreground bg-transparent px-6 md:px-8 text-md xl:text-xl font-mono text-foreground shadow transition-colors hover:bg-foreground/10 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50"
               >
-                {data.external_link_button.text}
-              </TrackedExternalLink>
+                {data.contact_button.text}
+              </button>
             )}
           </div>
         </div>
@@ -93,6 +102,19 @@ export const Hero = ({ lang, defaultLocale, data }: HeroProps) => {
           )}
         </div>
       </Container>
+
+      {/* Contact Modal */}
+      {data.contact_button && (
+        <ContactModal
+          isOpen={isContactModalOpen}
+          onClose={() => setIsContactModalOpen(false)}
+          title={data.contact_button.modal_title}
+          email={data.contact_button.email}
+          linkedinUrl={data.contact_button.linkedin_url}
+          githubUrl={data.contact_button.github_url}
+        />
+      )}
     </section>
   );
 };
+

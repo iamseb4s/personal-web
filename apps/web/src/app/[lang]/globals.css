@@ -6,7 +6,7 @@
   :root {
     --background: #e7e2db;
     --foreground: #242018;
-    --card: #0A0A0A;
+    --card: #f5f2ee;
     --primary: #bbbb9a;
     --primary-foreground: #242018;
     --secondary: #424f16;
@@ -19,7 +19,7 @@
   .dark {
     --background: #242018;
     --foreground: #e7e2db;
-    --card: #0A0A0A;
+    --card: #1a1814;
     --primary: #424f16;
     --primary-foreground: #e7e2db;
     --secondary: #bbbb9a;

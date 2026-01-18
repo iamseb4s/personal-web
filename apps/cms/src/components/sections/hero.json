@@ -20,9 +20,9 @@
       "component": "link.nav-link",
       "repeatable": false
     },
-    "external_link_button": {
+    "contact_button": {
       "type": "component",
-      "component": "link.external-link",
+      "component": "link.contact-button",
       "repeatable": false
     },
     "day_image": {
