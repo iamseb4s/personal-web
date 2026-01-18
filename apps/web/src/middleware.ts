@@ -12,8 +12,14 @@ async function getLocaleConfig() {
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  // Skip static files
-  if (pathname.includes('.')) {
+  // Skip static files and common browser requests
+  if (
+    pathname.includes('.') || 
+    pathname.startsWith('/api/') || 
+    pathname.startsWith('/_next/') ||
+    pathname === '/favicon.ico' ||
+    pathname === '/robots.txt'
+  ) {
     return;
   }
 
