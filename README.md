@@ -1,8 +1,8 @@
 # Personal Portfolio - A Headless Monorepo Showcase
 
-[![Next.js](https://img.shields.io/badge/Next.js-15.5.9-black?logo=next.js)](https://nextjs.org/) [![Strapi](https://img.shields.io/badge/Strapi-5.32.0-8F75FF?logo=strapi)](https://strapi.io/) [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/) [![Docker](https://img.shields.io/badge/Docker-gray?logo=docker)](https://www.docker.com/)
+[![Next.js](https://img.shields.io/badge/Next.js-15.5.9-black?logo=next.js)](https://nextjs.org/) [![Strapi](https://img.shields.io/badge/Strapi-5.33.3-8F75FF?logo=strapi)](https://strapi.io/) [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/) [![Docker](https://img.shields.io/badge/Docker-gray?logo=docker)](https://www.docker.com/)
 
-### 🌐 [View Live Demo](https://iamsebas.dev)
+## 🌐 [View Live Demo](https://iamsebas.dev/gh-readme-demo-web)
 
 This repository contains the source code for my personal portfolio, meticulously crafted not just as a gallery of my work, but as a testament to modern, high-standard web development practices. The project emphasizes performance, developer experience (DX), and architectural robustness, built on a foundation of the latest industry-standard technologies. It has been architected as a **headless monorepo** to showcase a clear separation of concerns between the frontend presentation layer and the backend content management system.
 
@@ -13,6 +13,7 @@ This repository contains the source code for my personal portfolio, meticulously
 - **GitHub Flow:** Adopts a streamlined workflow using feature branches and direct integration into `main`, favoring velocity and continuous delivery.
 - **Developer Experience (DX):** A fully containerized multi-service environment using Docker Compose ensures a consistent and hassle-free setup.
 - **Performance & Scalability:** Optimized Next.js frontend, powerful Strapi API, and multi-stage Docker builds create a lean and efficient application.
+- **Modern Interaction UX:** Interactive contact modals, contextual email popovers, and dynamic floating action buttons for improved engagement.
 - **Robust CI/CD Pipeline:** Automated quality checks on every pull request and release-based deployments to production ensure stability and predictability.
 - **Privacy-Focused Analytics:** Integration of analytics for tracking user interactions without compromising privacy.
 
@@ -42,7 +43,7 @@ The application features a robust internationalization strategy. A custom middle
 The entire lifecycle is containerized using Docker and Docker Compose, orchestrating the multi-service environment.
 
 - **Development (`docker-compose.dev.yml`):** Starts both services with hot-reloading for a fast feedback loop.
-- **Staging & Production (`docker-compose.staging.yml`, `docker-compose.prod.yml`):** Use multi-stage builds to create lean, secure, and optimized production images, with bind mounts for data persistence.
+- **Staging & Production (`docker-compose.staging.yml`, `docker-compose.prod.yml`):** Use multi-stage builds to create lean, secure, and optimized production images, with bind mounts for data persistence. The application features a dynamic runtime environment configuration to ensure consistency across deployments.
 
 ### 5. Observability
 
@@ -54,18 +55,18 @@ To ensure system reliability, the web application includes a dedicated health ch
 
 ## 🛠️ Technology Stack
 
-| Category              | Technology                                                              |
-| --------------------- | ----------------------------------------------------------------------- |
+| Category              | Technology                                                                  |
+| --------------------- | --------------------------------------------------------------------------- |
 | **Frontend (Web)**    | [Next.js](https://nextjs.org/) (v15.5.9), [React](https://react.dev/) (v19) |
-| **Backend (CMS)**     | [Strapi](https://strapi.io/) (v5.32.0)                                    |
-| **Language**          | [TypeScript](https://www.typescriptlang.org/) (v5)                      |
-| **Styling**           | [Tailwind CSS](https://tailwindcss.com/) (v4)                           |
-| **Containerization**  | [Docker](https://www.docker.com/) & Docker Compose                    |
-| **Linting**           | [ESLint](https://eslint.org/) (v9)                                      |
+| **Backend (CMS)**     | [Strapi](https://strapi.io/) (v5.33.3)                                      |
+| **Language**          | [TypeScript](https://www.typescriptlang.org/) (v5)                          |
+| **Styling**           | [Tailwind CSS](https://tailwindcss.com/) (v4)                               |
+| **Containerization**  | [Docker](https://www.docker.com/) & Docker Compose                          |
+| **Linting**           | [ESLint](https://eslint.org/) (v9)                                          |
 
 ## 📂 Project Structure
 
-```
+```text
 ./
 ├── apps/
 │   ├── cms/                  # Strapi Headless CMS application
